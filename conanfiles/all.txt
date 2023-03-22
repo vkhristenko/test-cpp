@@ -17,4 +17,4 @@ qt:with_mysql=False
 
 [generators]
 cmake_paths
-
+cmake_find_package
