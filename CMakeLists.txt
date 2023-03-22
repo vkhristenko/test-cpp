@@ -11,13 +11,14 @@ if (APPLE)
     add_compile_options(-fvisibility=hidden) 
 endif()
 
-include(${CMAKE_SOURCE_DIR}/cmake/common.cmake)
-
+# conan setup
 set(_conan_paths ${CMAKE_BINARY_DIR}/conan_paths.cmake)
 if (NOT EXISTS ${_conan_paths})
     testcpp_fail_with_error("file ${_conan_paths} does not exist - rerun conan!")
 endif()
 include(${_conan_paths})
+
+include(${CMAKE_SOURCE_DIR}/cmake/common.cmake)
 
 # TODO - auto discovery
 add_subdirectory(src/helloworld)
