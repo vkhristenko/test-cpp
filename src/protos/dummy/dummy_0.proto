@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package protos.dummy;
+
+message Dummy0One {
+    string f1 = 1;
+    int32 f2 = 2;
+    double f3 = 3;
+}
+
+message Dummy0Two {
+    Dummy0One dummy_one = 1;
+    repeated int32 repeated_ints = 2;
+}

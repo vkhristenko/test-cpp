@@ -19,6 +19,7 @@ endif()
 include(${_conan_paths})
 
 include(${CMAKE_SOURCE_DIR}/cmake/common.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/target.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/protobuf.cmake)
 
-# TODO - auto discovery
-add_subdirectory(src/helloworld)
+tcpp_auto_addsubdirs(src/)

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package protos.dummy;
+
+import "protos/dummy/dummy_0.proto";
+import "protos/dummy/dummy_1.proto";
+
+message Dummy2One {
+    string f1 = 1;
+    int32 f2 = 2;
+    double f3 = 3;
+    protos.dummy.Dummy1One something = 4;
+}
+
+message Dummy2Two {
+    Dummy2One dummy_one = 1;
+    repeated int32 repeated_ints = 2;
+    protos.dummy.Dummy0One something = 3;
+}

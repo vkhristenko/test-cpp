@@ -6,6 +6,7 @@ nlohmann_json/3.10.5
 qt/5.15.5
 flatbuffers/2.0.5
 yaml-cpp/0.7.0
+gtest/cci.20210126
 
 [options]
 qt:shared=True
