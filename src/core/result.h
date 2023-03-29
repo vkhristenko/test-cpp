@@ -4,7 +4,7 @@
 
 namespace core {
 
-template<typename T, typename E>
+template <typename T, typename E>
 class Result {
 public:
     Result(const T& value) : ok_{true}, value_{value} {}
@@ -15,11 +15,12 @@ public:
     bool is_ok() const noexcept { return ok_; }
     bool is_err() const noexcept { return !ok_; }
 
-    const T& unwrap() const & noexcept(false) {
+    const T& unwrap() const& noexcept(false) {
         if (ok_) {
             return value_;
         } else {
-            throw std::runtime_error("Called unwrap() on a Result object with an error");
+            throw std::runtime_error(
+                "Called unwrap() on a Result object with an error");
         }
     }
 
@@ -27,15 +28,17 @@ public:
         if (ok_) {
             return value_;
         } else {
-            throw std::runtime_error("Called unwrap() on a Result object with an error");
+            throw std::runtime_error(
+                "Called unwrap() on a Result object with an error");
         }
     }
 
-    const T&& unwrap() const && noexcept(false) {
+    const T&& unwrap() const&& noexcept(false) {
         if (ok_) {
             return std::move(value_);
         } else {
-            throw std::runtime_error("Called unwrap() on a Result object with an error");
+            throw std::runtime_error(
+                "Called unwrap() on a Result object with an error");
         }
     }
 
@@ -43,15 +46,17 @@ public:
         if (ok_) {
             return std::move(value_);
         } else {
-            throw std::runtime_error("Called unwrap() on a Result object with an error");
+            throw std::runtime_error(
+                "Called unwrap() on a Result object with an error");
         }
     }
 
-    const E& unwrap_err() const & noexcept(false) {
+    const E& unwrap_err() const& noexcept(false) {
         if (!ok_) {
             return error_;
         } else {
-            throw std::runtime_error("Called unwrap_err() on a Result object with a value");
+            throw std::runtime_error(
+                "Called unwrap_err() on a Result object with a value");
         }
     }
 
@@ -59,15 +64,17 @@ public:
         if (!ok_) {
             return error_;
         } else {
-            throw std::runtime_error("Called unwrap_err() on a Result object with a value");
+            throw std::runtime_error(
+                "Called unwrap_err() on a Result object with a value");
         }
     }
 
-    const E&& unwrap_err() const && noexcept(false) {
+    const E&& unwrap_err() const&& noexcept(false) {
         if (!ok_) {
             return std::move(error_);
         } else {
-            throw std::runtime_error("Called unwrap_err() on a Result object with a value");
+            throw std::runtime_error(
+                "Called unwrap_err() on a Result object with a value");
         }
     }
 
@@ -75,41 +82,30 @@ public:
         if (!ok_) {
             return std::move(error_);
         } else {
-            throw std::runtime_error("Called unwrap_err() on a Result object with a value");
+            throw std::runtime_error(
+                "Called unwrap_err() on a Result object with a value");
         }
     }
 
-    const T& unwrap_unsafe() const & noexcept(true) {
-        return value_;
-    }
+    const T& unwrap_unsafe() const& noexcept(true) { return value_; }
 
-    T& unwrap_unsafe() & noexcept(true) {
-        return value_;
-    }
+    T& unwrap_unsafe() & noexcept(true) { return value_; }
 
-    const T&& unwrap_unsafe() const && noexcept(true) {
+    const T&& unwrap_unsafe() const&& noexcept(true) {
         return std::move(value_);
     }
 
-    T&& unwrap_unsafe() && noexcept(true) {
-        return std::move(value_);
-    }
+    T&& unwrap_unsafe() && noexcept(true) { return std::move(value_); }
 
-    const E& unwrap_err_unsafe() const & noexcept(true) {
-        return error_;
-    }
+    const E& unwrap_err_unsafe() const& noexcept(true) { return error_; }
 
-    E& unwrap_err_unsafe() & noexcept(true) {
-        return error_;
-    }
+    E& unwrap_err_unsafe() & noexcept(true) { return error_; }
 
-    const E&& unwrap_err_unsafe() const && noexcept(true) {
+    const E&& unwrap_err_unsafe() const&& noexcept(true) {
         return std::move(error_);
     }
 
-    E&& unwrap_err_unsafe() && noexcept(true) {
-        return std::move(error_);
-    }
+    E&& unwrap_err_unsafe() && noexcept(true) { return std::move(error_); }
 
 private:
     bool ok_;
@@ -119,4 +115,4 @@ private:
     };
 };
 
-}
+}  // namespace core

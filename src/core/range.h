@@ -4,7 +4,8 @@
 
 namespace core {
 
-template <typename T, typename = typename std::enable_if<std::is_integral<T>::value>::type>
+template <typename T,
+          typename = typename std::enable_if<std::is_integral<T>::value>::type>
 class Range {
 public:
     class iterator {
@@ -19,6 +20,7 @@ public:
                 return value_ > other.value_;
             }
         }
+
     private:
         T value_;
         T step_;
@@ -36,7 +38,7 @@ private:
     T step_;
 };
 
-template<typename T>
+template <typename T>
 Range(T) -> Range<T>;
 
-}
+}  // namespace core
