@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package protos.grpc_dummy;
+
+service DummyService {
+  // Unary RPC method
+  rpc SayHelloUnary (HelloRequest) returns (HelloResponse) {}
+
+  // Client streaming RPC method
+  rpc SayHelloClientStreaming (stream HelloRequest) returns (HelloResponse) {}
+
+  // Server streaming RPC method
+  rpc SayHelloServerStreaming (HelloRequest) returns (stream HelloResponse) {}
+
+  // Bidirectional streaming RPC method
+  rpc SayHelloBidiStreaming (stream HelloRequest) returns (stream HelloResponse) {}
+}
+
+message HelloRequest {
+    string name = 1;
+}
+message HelloResponse {
+    string message = 2;
+}
