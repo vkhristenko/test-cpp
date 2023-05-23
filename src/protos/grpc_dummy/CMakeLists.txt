@@ -10,6 +10,6 @@ tcpp_protobuf_generate(
 
 tcpp_target_name(_target)
 add_library(${_target} ${_srcs} ${_hdrs})
-target_link_libraries(${_target} PUBLIC gRPC::gRPC src_bin_include)
+target_link_libraries(${_target} PUBLIC gRPC::gRPC base_include)
 
 add_subdirectory(examples)

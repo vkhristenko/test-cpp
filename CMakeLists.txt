@@ -17,7 +17,9 @@ if (NOT EXISTS ${_conan_paths})
     testcpp_fail_with_error("file ${_conan_paths} does not exist - rerun conan!")
 endif()
 include(${_conan_paths})
-
+# NOTE: cmake must have a CTestTEstfile.cmkae generated 
+# at the root of the build folder... otherwise it does not find tests
+include(CTest)
 include(${CMAKE_SOURCE_DIR}/cmake/common.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/target.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/protobuf.cmake)
