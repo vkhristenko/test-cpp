@@ -10,3 +10,6 @@
 
 #define TCPP_PRINT_HELLO_WORLD \
     ::fmt::print("hello world\n")
+
+#define TCPP_PRINT_PRETTY_FUNCTION() \
+    ::fmt::print("{}\n", TCPP_PRETTY_FUNCTION())
