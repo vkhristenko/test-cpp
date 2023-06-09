@@ -1,118 +1,93 @@
 #pragma once
 
+#include <exception>
+#include <variant>
 #include <stdexcept>
 
 namespace core {
 
 template <typename T, typename E>
 class Result {
+    // type requirements
+    static_assert(!std::is_same<T, E>::value, "Value/Error types must be different");
+
 public:
-    Result(const T& value) : ok_{true}, value_{value} {}
-    Result(T&& value) : ok_{true}, value_{std::move(value)} {}
-    Result(const E& error) : ok_{false}, error_{error} {}
-    Result(E&& error) : ok_{false}, error_{std::move(error)} {}
+    Result() = delete;
+    Result(Result const&) = default;
+    Result(Result&&) = default;
+    Result& operator=(Result const&) = default;
+    Result& operator=(Result&&) = default;
 
-    bool is_ok() const noexcept { return ok_; }
-    bool is_err() const noexcept { return !ok_; }
+    // generalize
+    Result(const T& value) 
+        : data_{value}
+    {}
 
-    const T& unwrap() const& noexcept(false) {
-        if (ok_) {
-            return value_;
-        } else {
-            throw std::runtime_error(
-                "Called unwrap() on a Result object with an error");
+    Result(T&& value) 
+        : data_{std::move(value)}
+    {}
+
+    Result(const E& error) 
+        : data_{error}
+    {}
+    Result(E&& error) 
+        : data_{std::move(error)}
+    {}
+
+    bool HasValue() const noexcept { return data_.index() == 0; }
+    bool HasError() const noexcept { return data_.index() == 1; }
+    bool Ok() const noexcept { return HasValue(); }
+    
+    T const& ValueUnsafe() const& noexcept {
+        return std::get<T>(data_);
+    }
+
+    T&& ValueUnsafe() && noexcept {
+        return std::get<T>(std::move(data_));
+    }
+
+    E const& ErrorUnsafe() const& noexcept {
+        return std::get<E>(data_);
+    }
+
+    E&& ErrorUnsafe() && noexcept {
+        return std::get<E>(std::move(data_));
+    }
+
+    T const& Value() const& {
+        if (HasError()) {
+            throw std::runtime_error{"No Value"};
         }
+
+        return ValueUnsafe();
     }
 
-    T& unwrap() & noexcept(false) {
-        if (ok_) {
-            return value_;
-        } else {
-            throw std::runtime_error(
-                "Called unwrap() on a Result object with an error");
+    T&& Value() && {
+        if (HasError()) {
+            throw std::runtime_error{"No Value"};
         }
+
+        return std::move(*this).ValueUnsafe();
     }
 
-    const T&& unwrap() const&& noexcept(false) {
-        if (ok_) {
-            return std::move(value_);
-        } else {
-            throw std::runtime_error(
-                "Called unwrap() on a Result object with an error");
+    E const& Error() const& {
+        if (HasValue()) {
+            throw std::runtime_error{"No Error"};
         }
+
+        return ErrorUnsafe();
     }
 
-    T&& unwrap() && noexcept(false) {
-        if (ok_) {
-            return std::move(value_);
-        } else {
-            throw std::runtime_error(
-                "Called unwrap() on a Result object with an error");
+    E&& Error() && {
+        if (HasValue()) {
+            throw std::runtime_error{"No Error"};
         }
+
+        return std::move(*this).ErrorUnsafe();
     }
-
-    const E& unwrap_err() const& noexcept(false) {
-        if (!ok_) {
-            return error_;
-        } else {
-            throw std::runtime_error(
-                "Called unwrap_err() on a Result object with a value");
-        }
-    }
-
-    E& unwrap_err() & noexcept(false) {
-        if (!ok_) {
-            return error_;
-        } else {
-            throw std::runtime_error(
-                "Called unwrap_err() on a Result object with a value");
-        }
-    }
-
-    const E&& unwrap_err() const&& noexcept(false) {
-        if (!ok_) {
-            return std::move(error_);
-        } else {
-            throw std::runtime_error(
-                "Called unwrap_err() on a Result object with a value");
-        }
-    }
-
-    E&& unwrap_err() && noexcept(false) {
-        if (!ok_) {
-            return std::move(error_);
-        } else {
-            throw std::runtime_error(
-                "Called unwrap_err() on a Result object with a value");
-        }
-    }
-
-    const T& unwrap_unsafe() const& noexcept(true) { return value_; }
-
-    T& unwrap_unsafe() & noexcept(true) { return value_; }
-
-    const T&& unwrap_unsafe() const&& noexcept(true) {
-        return std::move(value_);
-    }
-
-    T&& unwrap_unsafe() && noexcept(true) { return std::move(value_); }
-
-    const E& unwrap_err_unsafe() const& noexcept(true) { return error_; }
-
-    E& unwrap_err_unsafe() & noexcept(true) { return error_; }
-
-    const E&& unwrap_err_unsafe() const&& noexcept(true) {
-        return std::move(error_);
-    }
-
-    E&& unwrap_err_unsafe() && noexcept(true) { return std::move(error_); }
 
 private:
-    bool ok_;
-    union {
-        T value_;
-        E error_;
-    };
+    std::variant<T, E> data_;
 };
 
 }  // namespace core
