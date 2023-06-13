@@ -29,13 +29,19 @@ private:
                     return ;
                 }
 
+                count_++;
                 ::fmt::print("new connection! fd = {}\n", s.ValueUnsafe());
-                std::exit(0);
+                if (count_ == 5) {
+                    std::exit(0);
+                }
+
+                DoAccept();
             }
         );
     }
 
     Acceptor acceptor_;
+    int count_ = 0;
 };
 
 void Test0() {

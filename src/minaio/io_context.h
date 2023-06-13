@@ -60,6 +60,7 @@ public:
         while (!completion_handlers_.empty()) {
             auto op = std::move(completion_handlers_.front()); 
             op();
+            completion_handlers_.pop();
         }
 
         while (MoreEvents()) {

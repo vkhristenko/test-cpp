@@ -198,6 +198,7 @@ private:
 };
 
 void AcceptorReactor::Handle(epoll_event const&) noexcept {
+    TCPP_PRINT_PRETTY_FUNCTION();
     //
     // if no async op was enqueued - skip this event
     //
@@ -211,6 +212,7 @@ void AcceptorReactor::Handle(epoll_event const&) noexcept {
     // if initiation completed
     //
     if (re.HasError() || (re.HasValue() && re.ValueUnsafe() > 0)) {
+        TCPP_PRINT_HERE();
         auto cb = [re = std::move(re), ch = std::move(ch_)]() {
             ch(std::move(re));
         };
@@ -225,6 +227,7 @@ void AcceptorReactor::Handle(epoll_event const&) noexcept {
 }
     
 core::Result<int, std::string> AcceptorReactor::DoAsyncAcceptInitiation() noexcept {
+    TCPP_PRINT_PRETTY_FUNCTION();
     auto client_sock = accept(a_.fd_, nullptr, nullptr);
     if (client_sock <= -1) {
         if (errno != EAGAIN && errno != EWOULDBLOCK){
