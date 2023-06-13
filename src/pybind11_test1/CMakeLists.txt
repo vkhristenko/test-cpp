@@ -1,3 +1,7 @@
+if (UNIX AND NOT APPLE)
+    return()
+endif()
+
 find_package(pybind11 REQUIRED)
 
 tcpp_target_name(_target)

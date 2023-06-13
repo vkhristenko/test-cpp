@@ -1,49 +1,17 @@
 #pragma once
 
+#include <unordered_map>
+#include <queue>
 #include <string>
 
 #include "fmt/core.h"
 
+#include "core/result.h"
 #include "core/macros.h"
 
+#include "minaio/common.h"
+
 namespace minaio {
-
-class Endpoint {
-public:
-    explicit Endpoint(std::string const&) {
-        TCPP_PRINT_PRETTY_FUNCTION();
-    }
-
-    unsigned int Port() const noexcept {
-        TCPP_PRINT_PRETTY_FUNCTION();
-        return 0;
-    }
-};
-
-
-class ExecutionContext {
-public:
-    virtual ~ExecutionContext() noexcept = default;
-
-    virtual void Poll() = 0;
-};
-
-class IOContext final : public ExecutionContext {
-public:
-    IOContext() {
-        TCPP_PRINT_PRETTY_FUNCTION();
-    }
-
-    ~IOContext() noexcept {
-        TCPP_PRINT_PRETTY_FUNCTION();
-    }
-
-    void Poll() override {
-        TCPP_PRINT_PRETTY_FUNCTION();
-    }
-
-public:
-};
 
 class ISocket {
 public:
@@ -102,27 +70,19 @@ protected:
     IOContext& io_ctx_;
 };
 
-class Acceptor final {
+class Connector final {
 public:
-    Acceptor(IOContext& io_ctx, Endpoint endpoint)
-        : io_ctx_{io_ctx}
-        , endpoint_{std::move(endpoint)}
-    {
-        // create a file descriptor - non blocking one
-        // Add it to the set of watched fds
-        TCPP_PRINT_PRETTY_FUNCTION();
-    }
+    Connector(IOContext& ctx) 
+        : ctx_{ctx}
+    {}
 
     template<typename Callable>
-    void AsyncAccept(Callable&&) noexcept {
-        // perform accept in non-blocking fashion
-        // assign a callback to run
-        TCPP_PRINT_PRETTY_FUNCTION();
+    void AsyncConnect(Callable&&) {
+        // TODO
     }
 
 private:
-    IOContext& io_ctx_;
-    Endpoint endpoint_;
+    IOContext& ctx_;
 };
 
 }

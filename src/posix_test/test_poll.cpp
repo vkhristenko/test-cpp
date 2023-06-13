@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-// TODO some of these should be removed, they are for select...
+// TODO remove what's not needed
 #include <poll.h>
 #include <unistd.h>
 #include <sys/types.h>
