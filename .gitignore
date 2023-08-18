@@ -35,3 +35,5 @@ build*/
 
 # clangd
 .cache
+
+src/uio

@@ -32,6 +32,7 @@ public:
 protected:
     core::Result<int, std::string> Register(IOContext& io_ctx, int fd, epoll_event& e);
     core::Result<int, std::string> Deregister(IOContext& io_ctx, int fd);
+    core::Result<int, std::string> Modify(IOContext& io_ctx, int fd, epoll_event&);
     void EnqueueCompletionHandler(IOContext& io_ctx, std::function<void()> cb);
 };
 

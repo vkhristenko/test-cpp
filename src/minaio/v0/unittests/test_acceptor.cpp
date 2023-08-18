@@ -23,7 +23,7 @@ struct Server {
 private:
     void DoAccept() noexcept {
         acceptor_.AsyncAccept(
-            [this](Result<int, std::string> s) {
+            [this](Result<StreamSocket, std::string> s) {
                 if (s.HasError()) {
                     ::fmt::print("{}\n", s.ErrorUnsafe());
                     return ;

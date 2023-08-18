@@ -17,6 +17,7 @@ public:
     explicit Endpoint(std::string const&, unsigned int port) {
         TCPP_PRINT_PRETTY_FUNCTION();
     }
+    ~Endpoint() noexcept = default;
 
     unsigned int port() const noexcept {
         TCPP_PRINT_PRETTY_FUNCTION();

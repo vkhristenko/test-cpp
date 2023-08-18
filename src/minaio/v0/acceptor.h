@@ -10,7 +10,9 @@
 #include "core/macros.h"
 
 #include "minaio/endpoint.h"
+#include "minaio/socket_base.h"
 #include "minaio/io_context.h"
+#include "minaio/stream_socket.h"
 
 namespace minaio {
 
@@ -29,86 +31,15 @@ public:
         delete this;
     }
 
-    core::Result<int, std::string> DoAsyncAcceptInitiation() noexcept;
+    core::Result<SocketBase, std::string> DoAsyncAcceptInitiation() noexcept;
 
 private:
     friend class Acceptor;
     Acceptor& a_;
-    std::function<void(core::Result<int, std::string>)> ch_;
+    std::function<void(core::Result<SocketBase, std::string>)> ch_;
 };
 
-//
-// encapsulates basic operations for socket file descriptor
-//
-class SocketBase {
-public:
-    SocketBase(int fd)
-        : fd_{fd}
-    {
-        TCPP_PRINT_PRETTY_FUNCTION();
-        // passing a negative fd sets invalid state
-        if (fd_ < 0) {
-            fd_ = -1;
-            return ;
-        }
-
-        SetNonBlocking();
-    }
-    SocketBase() {
-        TCPP_PRINT_PRETTY_FUNCTION();
-        fd_ = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-        if (fd_ < 0) {
-            ::fmt::print("socket error! error = {}\n", strerror(errno));
-            fd_ = -1;
-            throw std::runtime_error{"socket error!"};
-        }
-
-        SetNonBlocking();
-    }
-    SocketBase(SocketBase const&) = default;
-    SocketBase(SocketBase&&) = default;
-    SocketBase& operator=(SocketBase const&) = default;
-    SocketBase& operator=(SocketBase&&) = default;
-    ~SocketBase() noexcept {
-        TCPP_PRINT_PRETTY_FUNCTION();
-        DoClose();
-    }
-
-    void Close() noexcept {
-        TCPP_PRINT_PRETTY_FUNCTION();
-        DoClose();
-    }
-
-    void SetNonBlocking() {
-        TCPP_PRINT_PRETTY_FUNCTION();
-        //
-        // Make this file descriptor non blocking
-        //
-        auto ret = fcntl(fd_, F_SETFL, fcntl(fd_, F_GETFL, 0) | O_NONBLOCK);
-        if (ret == -1) {
-            ::fmt::print("fcntl error! error = {}\n", strerror(errno));
-            fd_ = -1;
-            throw std::runtime_error{"fcntl error!"};
-        }
-    }
-
-    int Descriptor() const noexcept { return fd_; }
-
-    bool IsOpen() const noexcept { return fd_ > 0; }
-
-protected:
-    void DoClose() {
-        if (IsOpen()) {
-            close(fd_);
-            fd_ = -1;
-        }
-    }
-
-protected:
-    int fd_;
-};
-
-class Acceptor final : public SocketBase {
+class Acceptor final : protected SocketBase {
 public:
     Acceptor(IOContext& io_ctx, Endpoint endpoint)
         : SocketBase()
@@ -159,7 +90,7 @@ public:
     }
 
     template<typename Callable>
-    // Callable = void(Result<int, std::string>)
+    // Callable = void(Result<StreamSocket, std::string>)
     void AsyncAccept(Callable&& callable) noexcept {
         TCPP_PRINT_PRETTY_FUNCTION();
 
@@ -211,7 +142,7 @@ void AcceptorReactor::Handle(epoll_event const&) noexcept {
     // 
     // if initiation completed
     //
-    if (re.HasError() || (re.HasValue() && re.ValueUnsafe() > 0)) {
+    if (re.HasError() || (re.HasValue() && re.ValueUnsafe().IsOpen())) {
         TCPP_PRINT_HERE();
         auto cb = [re = std::move(re), ch = std::move(ch_)]() {
             ch(std::move(re));
@@ -226,7 +157,7 @@ void AcceptorReactor::Handle(epoll_event const&) noexcept {
     //
 }
     
-core::Result<int, std::string> AcceptorReactor::DoAsyncAcceptInitiation() noexcept {
+core::Result<SocketBase, std::string> AcceptorReactor::DoAsyncAcceptInitiation() noexcept {
     TCPP_PRINT_PRETTY_FUNCTION();
     auto client_sock = accept(a_.fd_, nullptr, nullptr);
     if (client_sock <= -1) {
@@ -235,10 +166,10 @@ core::Result<int, std::string> AcceptorReactor::DoAsyncAcceptInitiation() noexce
             return std::string{strerror(errno)};
         }
 
-        return -1;
+        return SocketBase{-1};
     }
 
-    return client_sock;
+    return SocketBase{client_sock};
 };
 
 }

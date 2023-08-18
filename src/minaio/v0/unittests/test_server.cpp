@@ -7,7 +7,6 @@
 #include "core/result.h"
 #include "core/macros.h"
 
-#include "minaio/IOContext.h"
 
 using namespace core;
 using namespace minaio;

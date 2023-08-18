@@ -9,33 +9,22 @@
 #include "core/result.h"
 #include "core/macros.h"
 
-#include "minaio/common.h"
+#include "minaio/endpoint.h"
+#include "minaio/socket_base.h"
+#include "minaio/io_context.h"
 
 namespace minaio {
 
-class ISocket {
-public:
-    virtual ~ISocket() noexcept = default;
-    
-    Endpoint const& LocalEndpoint() const noexcept {
-        return local_endpoint_;
-    }
-
-protected:
-    explicit ISocket(Endpoint const& e) 
-        : local_endpoint_{e}
-    {}
-
-protected:
-    Endpoint local_endpoint_;
-};
-
-class Acceptor;
-class Connector;
-
-class StreamSocket : public ISocket {
+//
+// TODO...
+// a stream to represent a tcp-based socket comm
+// TODO may be we do need Connector in here instead of keeping track if we are server
+// or client side stream
+//
+class StreamSocket final : protected SocketBase {
 public:
     template<typename Callable>
+    // Callable = void(REsult<std::size, std::string>)
     void AsyncRead(
             char* data,
             std::size_t const max_size,
@@ -46,6 +35,7 @@ public:
     }
 
     template<typename Callable>
+    // Callable = void(Result<std::size, std::string>)
     void AsyncWrite(
             char const* data,
             std::size_t const max_size,
@@ -55,34 +45,25 @@ public:
         // assign a callback to run on completion
         TCPP_PRINT_PRETTY_FUNCTION();
     }
-    
+
 protected:
-    StreamSocket(IOContext& ctx, Endpoint const& e)
-        : ISocket(e)
-        , io_ctx_{ctx}
+    // 
+    // disallow creation of socket from user side
+    //
+    StreamSocket(IOContext& io_ctx, int fd)
+        : SocketBase(fd)
     {
         TCPP_PRINT_PRETTY_FUNCTION();
+        if (!IsOpen()) {
+            throw std::runtime_error{"invalid file descriptor"};
+        }
     }
-
+    
 protected:
+    IOContext* io_ctx_;
+
     friend class Acceptor;
     friend class Connector;
-    IOContext& io_ctx_;
-};
-
-class Connector final {
-public:
-    Connector(IOContext& ctx) 
-        : ctx_{ctx}
-    {}
-
-    template<typename Callable>
-    void AsyncConnect(Callable&&) {
-        // TODO
-    }
-
-private:
-    IOContext& ctx_;
 };
 
 }
