@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <exception>
 #include <variant>
 #include <stdexcept>
@@ -88,6 +89,50 @@ public:
 
 private:
     std::variant<T, E> data_;
+};
+
+template<typename E>
+class Result<void, E> {
+public: 
+    Result() = default;
+    Result(Result const&) = default;
+    Result(Result&&) = default;
+    Result& operator=(Result const&) = default;
+    Result& operator=(Result&&) = default;
+
+    Result(E const& e)
+        : data_{e}
+    {}
+
+    Result(E&& e)
+        : data_{std::move(e)}
+    {}
+
+    bool HasValue() const noexcept { return !HasError(); }
+    bool HasError() const noexcept { return data_.has_value(); }
+    bool ok() const noexcept { return HasValue(); }
+
+    E const& ErrorUnsafe() const& noexcept { return data_.value(); }
+    E&& ErrorUnsafe() && noexcept { return std::move(data_).value(); }
+
+    E const& Error() const& {
+        if (HasValue()) {
+            throw std::runtime_error{"no error"};
+        }
+
+        return ErrorUnsafe();
+    }
+
+    E&& Error() && {
+        if (HasValue()) {
+            throw std::runtime_error{"no error"};
+        }
+
+        return std::move(*this).ErrorUnsafe();
+    }
+
+private:
+    std::optional<E> data_;
 };
 
 }  // namespace core

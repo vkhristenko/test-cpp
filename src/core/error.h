@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <string>
 #include <memory>
 #include <type_traits>
@@ -19,13 +20,25 @@ public:
     virtual std::string to_string() const noexcept = 0;
 };
 
+template<typename T>
+T const* error_details_cast(IErrorDetails const* ptr) noexcept {
+    static_assert(
+        std::is_base_of<
+            IErrorDetails, 
+            typename std::decay<T>::type
+        >::value
+    );
+
+    return dynamic_cast<T const*>(ptr);
+}
+
 class Error {
 public:
     Error() = delete;
     Error(Error const&);
-    Error(Error&&);
+    Error(Error&&) = default;
     Error& operator=(Error const&);
-    Error& operator=(Error&&);
+    Error& operator=(Error&&) = default;
 
     template<
         typename E,
@@ -51,6 +64,25 @@ public:
 private:
     SourceContext source_context_;
     std::unique_ptr<IErrorDetails> details_;
+};
+
+class StringErrorDetails final : public IErrorDetails {
+public:
+    // TODO ctors taking ownership of string
+    explicit StringErrorDetails(std::string const& msg)
+        : msg_{msg}
+    {}
+
+    inline std::unique_ptr<IErrorDetails> Clone() const noexcept override {
+        return std::make_unique<StringErrorDetails>(msg_);
+    }
+
+    inline std::string to_string() const noexcept override {
+        return msg_;
+    }
+
+private:
+    std::string msg_;
 };
 
 }

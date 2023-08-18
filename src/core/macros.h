@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fmt/core.h"
+
 #define TCPP_PRETTY_FUNCTION() __PRETTY_FUNCTION__
 #define TCPP_FUNCTION() __FUNCTION__
 #define TCPP_LINE() __LINE__

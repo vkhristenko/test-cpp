@@ -1,3 +1,6 @@
+tcpp_print("skipping for now TODO")
+return()
+
 file(GLOB _hdrs CONFIGURE_DEPENDS *.h)
 list(REMOVE_ITEM _hdrs ${CMAKE_CURRENT_SOURCE_DIR}/socket.h)
 

@@ -1,3 +1,6 @@
+tcpp_print("must add Clagn package - seems like no conan package...")
+return()
+
 find_package(Clang REQUIRED)
 
 include(${LLVM_CMAKE_DIR}/AddLLVM.cmake)

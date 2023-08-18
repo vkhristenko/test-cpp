@@ -7,8 +7,8 @@
 namespace core {
 
 struct SourceContext {
-    std::string file_name;
-    std::uint32_t line;
+    std::string file_name{};
+    std::uint32_t line{0};
 };
 
 }

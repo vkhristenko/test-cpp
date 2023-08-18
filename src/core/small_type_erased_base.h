@@ -1,16 +1,56 @@
 #pragma once
 
+#include "core/macros.h"
+
+#include <cstdlib>
+#include <utility>
+
 namespace core {
+
+namespace details {
+
+template<typename R, typename... Args>
+using FreeOrStaticFunctionPtr = R(*)(Args...);
+
+}
 
 template<std::size_t kMaxObjectSize = 64>
 class SmallTypeErasedBase {
 public:
     SmallTypeErasedBase() = default;
-    SmallTypeErasedBase(SmallTypeErasedBase const&);
-    SmallTypeErasedBase(SmallTypeErasedBase&&);
-    SmallTypeErasedBase& operator=(SmallTypeErasedBase const&);
-    SmallTypeErasedBase& operator=(SmallTypeErasedBase&&);
-    ~SmallTypeErasedBase();
+    inline SmallTypeErasedBase(SmallTypeErasedBase const& r) 
+        : policy_{r.policy_}
+    {
+        if (policy_) {
+            policy_(data_, nullptr, r.data_);
+        }
+    }
+    inline SmallTypeErasedBase(SmallTypeErasedBase&& r) 
+        : policy_{r.policy_}
+    {
+        if (policy_) {
+            policy_(data_, std::move(r).data_, nullptr);
+        }
+    }
+    inline SmallTypeErasedBase& operator=(SmallTypeErasedBase const& r) {
+        this->destruct();
+        policy_ = r.policy_;
+        if (policy_) {
+            policy_(data_, nullptr, data_);
+        }
+        return *this;
+    }
+    inline SmallTypeErasedBase& operator=(SmallTypeErasedBase&& r) {
+        this->destruct();
+        policy_ = r.policy_;
+        if (policy_) {
+            policy_(data_, std::move(r).data_, nullptr);
+        }
+        return *this;
+    }
+    ~SmallTypeErasedBase() {
+        destruct();
+    }
 
     template<typename F>
     constexpr static bool CanStore() noexcept {
@@ -34,18 +74,27 @@ public:
                 using TargetType = F;
                 using DecayedTargetType = typename std::decay<TargetType>::type;
 
+                //
+                // move ctor
+                //
                 if (move_src) {
                     auto r = reinterpret_cast<DecayedTargetType*>(move_src);
                     new (dest) DecayedTargetType{std::move(*r)};
                     return ;
                 }
 
+                //
+                // cp ctor
+                //
                 if (copy_src) {
                     auto r = reinterpret_cast<DecayedTargetType const*>(copy_src);
                     new (dest) DecayedTargetType{*r};
                     return ;
                 }
 
+                //
+                // dtor
+                //
                 auto __ptr = reinterpret_cast<DecayedTargetType*>(dest);
                 __ptr->~DecayedTargetType();
             }
@@ -74,7 +123,7 @@ public:
     bool has_value() const noexcept { return policy_; }
 
 private:
-    void destroy() {
+    void destruct() {
         TCPP_PRINT_HERE();
         if (policy_) {
             policy_(data_, nullptr, nullptr);
@@ -84,7 +133,7 @@ private:
 
 private:
     char data_[kMaxObjectSize];
-    FreeOrStaticFunctionPtr<void, char*, char*, char const*> policy_ = nullptr;
+    details::FreeOrStaticFunctionPtr<void, char*, char*, char const*> policy_ = nullptr;
 };
 
 }
