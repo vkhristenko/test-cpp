@@ -37,3 +37,5 @@ build*/
 .cache
 
 src/uio
+
+src/private/

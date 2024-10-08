@@ -1,0 +1,5 @@
+#pragma once
+
+#if !defined(TCPP_INJECT_DEPENDENCY_DECLARE)
+#define TCPP_INJECT_DEPENDENCY_DECLARE(REAL, MOCK) REAL
+#endif

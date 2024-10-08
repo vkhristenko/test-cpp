@@ -91,6 +91,50 @@ private:
     std::variant<T, E> data_;
 };
 
+template<typename T>
+class Result<T, void> {
+public: 
+    Result() = default;
+    Result(Result const&) = default;
+    Result(Result&&) = default;
+    Result& operator=(Result const&) = default;
+    Result& operator=(Result&&) = default;
+
+    Result(T const& e)
+        : data_{e}
+    {}
+
+    Result(T&& e)
+        : data_{std::move(e)}
+    {}
+
+    bool HasValue() const noexcept { return !HasError(); }
+    bool HasError() const noexcept { return !data_.has_value(); }
+    bool ok() const noexcept { return HasValue(); }
+
+    T const& ValueUnsafe() const& noexcept { return data_.value(); }
+    T&& ErrorUnsafe() && noexcept { return std::move(data_).value(); }
+
+    T const& Error() const& {
+        if (HasValue()) {
+            throw std::runtime_error{"no error"};
+        }
+
+        return ErrorUnsafe();
+    }
+
+    T&& Error() && {
+        if (HasValue()) {
+            throw std::runtime_error{"no error"};
+        }
+
+        return std::move(*this).ErrorUnsafe();
+    }
+
+private:
+    std::optional<T> data_;
+};
+
 template<typename E>
 class Result<void, E> {
 public: 

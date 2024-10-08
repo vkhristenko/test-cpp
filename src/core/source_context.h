@@ -6,7 +6,7 @@
 
 namespace core {
 
-struct SourceContext {
+struct SourceLocation {
     std::string file_name{};
     std::uint32_t line{0};
 };
@@ -14,4 +14,4 @@ struct SourceContext {
 }
 
 #define TCPP_CURRENT_SOURCE_CONTEXT() \
-    ::core::SourceContext(TCPP_FILE(), TCPP_LINE())
+    ::core::SourceLocation{ .file_name{TCPP_FILE()}, .line{TCPP_LINE()}}

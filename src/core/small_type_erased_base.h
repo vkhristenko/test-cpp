@@ -112,7 +112,6 @@ public:
         >::type
     >
     SmallTypeErasedBase& operator=(F&& f) {
-        TCPP_PRINT_HERE();
         SmallTypeErasedBase tmp = std::forward<F>(f);
         *this = std::move(tmp);
         return *this;
@@ -124,14 +123,13 @@ public:
 
 private:
     void destruct() {
-        TCPP_PRINT_HERE();
         if (policy_) {
             policy_(data_, nullptr, nullptr);
             policy_ = nullptr;
         }
     }
 
-private:
+protected:
     char data_[kMaxObjectSize];
     details::FreeOrStaticFunctionPtr<void, char*, char*, char const*> policy_ = nullptr;
 };

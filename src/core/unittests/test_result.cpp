@@ -53,6 +53,8 @@ TEST(ResultTest, UnwrapErrUnsafe) {
     Result<int, std::string> ok = 42;
     Result<int, std::string> err = "error message";
 
+    err.Match()
+
     // Segfaults, but doesn't crash the program
     ASSERT_DEATH(ok.unwrap_err_unsafe(), "");
 

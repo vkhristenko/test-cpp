@@ -2,6 +2,9 @@
 
 namespace core {
 
+char IErrorDetails::s_id = 0;
+char StringErrorDetails::s_id = 0;
+
 Error::Error(Error const& e)
     : source_context_{e.source_context_}
     , details_{e.details_->Clone()}
