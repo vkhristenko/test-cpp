@@ -1,3 +1,5 @@
+import enum_gen as _e
+
 enum1 = {
     "one": 0,
     "two": 1,

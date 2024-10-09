@@ -18,7 +18,7 @@ include(${CMAKE_SOURCE_DIR}/cmake-tools/common.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake-tools/target.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake-tools/protobuf.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake-tools/py.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake-tools/GenerateEnum.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake-tools/enum_gen.cmake)
 
 # conan setup
 set(_conan_paths ${CMAKE_BINARY_DIR}/conan_paths.cmake)
