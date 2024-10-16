@@ -1,5 +1,3 @@
-find_package(gTest REQUIRED)
-
 file(GLOB _srcs CONFIGURE_DEPENDS *.cpp)
 list(REMOVE_ITEM _srcs ${CMAKE_CURRENT_SOURCE_DIR}/test_result.cpp)
 

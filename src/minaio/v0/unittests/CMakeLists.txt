@@ -1,6 +1,3 @@
-find_package(fmt REQUIRED)
-find_package(gTest REQUIRED)
-
 file(GLOB _srcs CONFIGURE_DEPENDS *.cpp)
 
 tcpp_target_name(_target_base)

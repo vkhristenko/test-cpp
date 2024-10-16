@@ -1,6 +1,3 @@
-find_package(Boost REQUIRED)
-find_package(fmt REQUIRED)
-
 file(GLOB _srcs CONFIGURE_DEPENDS *.cpp)
 file(GLOB _hdrs CONFIGURE_DEPENDS *.h)
 

@@ -1,5 +1,3 @@
-find_package(fmt REQUIRED)
-
 file(GLOB _hdrs CONFIGURE_DEPENDS *.h)
 file(GLOB _srcs CONFIGURE_DEPENDS *.cpp)
 

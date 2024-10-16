@@ -27,4 +27,12 @@ if (NOT EXISTS ${_conan_paths})
 endif()
 include(${_conan_paths})
 
+find_package(Boost REQUIRED)
+#find_package(Clang REQUIRED)
+find_package(fmt REQUIRED)
+find_package(gTest REQUIRED)
+find_package(pybind11 REQUIRED)
+find_package(protobuf REQUIRED)
+find_package(gRPC REQUIRED)
+
 tcpp_auto_addsubdirs(src/)

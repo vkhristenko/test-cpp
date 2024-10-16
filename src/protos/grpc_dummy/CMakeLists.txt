@@ -1,5 +1,3 @@
-find_package(gRPC REQUIRED)
-
 file(GLOB _protos CONFIGURE_DEPENDS *.proto)
 
 tcpp_protobuf_generate(

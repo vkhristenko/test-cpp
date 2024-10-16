@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "enum_gen_test/defs_generated.h"
+#include "enum_gen_test/enum_gen.h"
 
 int main() {
     std::cout << ToStringView(enum1::one) << std::endl;
