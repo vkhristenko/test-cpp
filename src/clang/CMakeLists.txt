@@ -1,3 +1,4 @@
+tcpp_print("skip clang")
 return()
 
 tcpp_module_name(_module)
