@@ -7,9 +7,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # use c++11 at a minimum
 set(CMAKE_CXX_STANDARD 11)
-if (APPLE)
-    add_compile_options(-fvisibility=hidden) 
-endif()
 
 # NOTE: cmake must have a CTestTEstfile.cmkae generated 
 # at the root of the build folder... otherwise it does not find tests

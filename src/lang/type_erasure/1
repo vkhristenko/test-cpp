@@ -1,0 +1,63 @@
+#include <iostream>
+
+struct Base;
+
+using FuncType = void(Base*);
+
+struct Base {
+    void run() {
+        func_(this);    
+    }
+   
+protected:
+    Base(FuncType* func)  
+        : func_(func)
+    {}
+
+    FuncType* func_;
+};
+
+struct Derived : Base {
+    Derived() : Base(&Derived::do_run) {}
+
+    static void do_run(Base* self) {
+        std::cout << __PRETTY_FUNCTION__ << std::endl;
+    }
+};
+
+void Test0() {
+    auto derived = Derived{};
+    Base& base = derived;
+    base.run();
+}
+
+struct QueryBase {
+    virtual void const* ClassId() const noexcept = 0;
+
+    virtual bool isA(void const* class_id) const noexcept {
+        return class_id == ClassId();
+    }
+
+    inline static char s_id = 0; 
+};
+
+void Test1() {
+    auto type = ByExchange {10};
+    auto checker = [](auto const& QueryBase query) {
+        switch (query.type()) {
+        default: 
+            std::cout << "something is wrong" << std::endl;
+            break;
+        case ByExchange::kType:
+            std::cout << "by exchnage" << std::endl;
+            break;
+        case BySecId::kType:
+            std::cout << "by sec" << std::endl;
+            break;
+        }
+    };
+}
+
+int main() {
+    Test0();
+}
