@@ -32,4 +32,4 @@ find_package(pybind11 REQUIRED)
 find_package(protobuf REQUIRED)
 find_package(gRPC REQUIRED)
 
-tcpp_auto_addsubdirs(src/)
+tcpp_auto_addsubdirs(src)

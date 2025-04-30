@@ -5,8 +5,6 @@ file(GLOB _py_srcs CONFIGURE_DEPENDS *.py)
 set(_output ${CMAKE_CURRENT_BINARY_DIR}/defs_generated.h)
 
 tcpp_target_form(_target_enum_gen ${_module} enum_gen)
-tcpp_module_name_from_target(_module_tmp ${_target_enum_gen})
-tcpp_debug_var(_module_tmp)
 tcpp_enum_gen(
     TARGET ${_target_enum_gen}
     INPUT ${_py_srcs}
