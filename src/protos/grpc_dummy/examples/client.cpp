@@ -1,17 +1,17 @@
+#include <grpcpp/grpcpp.h>
+
 #include <iostream>
 #include <memory>
 #include <string>
 
-#include <grpcpp/grpcpp.h>
-
 #include "protos/grpc_dummy/dummy_0.grpc.pb.h"
 
-using protos::grpc_dummy::DummyService;
-using protos::grpc_dummy::HelloRequest;
-using protos::grpc_dummy::HelloResponse;
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
+using protos::grpc_dummy::DummyService;
+using protos::grpc_dummy::HelloRequest;
+using protos::grpc_dummy::HelloResponse;
 
 class DummyClient {
 public:

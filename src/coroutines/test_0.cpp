@@ -18,7 +18,7 @@ struct Promise {
 
 Coroutine Test0Coro() {
     TCPP_PRINT_HERE();
-    co_return ;
+    co_return;
 }
 
 void Test0() {
@@ -37,7 +37,7 @@ Coroutine Test1Coro() {
     TCPP_PRINT_HERE();
     co_await std::experimental::suspend_always{};
     TCPP_PRINT_HERE();
-    co_return ;
+    co_return;
 }
 
 void Test1() {
@@ -77,7 +77,7 @@ Coroutine2 Test2Coro() {
     TCPP_PRINT_HERE();
     co_await 20;
     TCPP_PRINT_HERE();
-    co_return ;
+    co_return;
 }
 
 void Test2() {

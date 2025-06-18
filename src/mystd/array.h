@@ -4,7 +4,7 @@
 
 namespace mystd {
 
-template<typename T, std::size_t N>
+template <typename T, std::size_t N>
 class Array final {
 public:
     Array() noexcept;
@@ -19,7 +19,7 @@ public:
 
     T const& operator[](std::size_t i) const noexcept { return data_[i]; }
     T& operator[](std::size_t i) noexcept { return data_[i]; }
-    
+
     /// TODO
     /// views/ranges/iterators
 
@@ -27,4 +27,4 @@ private:
     T data_[N];
 };
 
-}
+}  // namespace mystd

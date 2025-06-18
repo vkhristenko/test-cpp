@@ -1,14 +1,18 @@
-#include "gtest/gtest.h"
-
 #include <queue>
 
-template<typename T>
+#include "gtest/gtest.h"
+
+template <typename T>
 class Queue {
 public:
     Queue() {}
 
     void Enqueue(T const& e) { q_.push(e); }
-    T Dequeue() { auto e = std::move(q_.front()); q_.pop(); return std::move(e); }
+    T Dequeue() {
+        auto e = std::move(q_.front());
+        q_.pop();
+        return std::move(e);
+    }
     std::size_t size() const { return q_.size(); }
 
 private:
@@ -18,28 +22,24 @@ private:
 class QueueTest : public testing::Test {
 public:
     void SetUp() override {
-        for (std::size_t i=0; i<10; i++) {
+        for (std::size_t i = 0; i < 10; i++) {
             q_.Enqueue(i);
         }
     }
 
-    void TearDown() override {
-
-    }
+    void TearDown() override {}
 
     Queue<std::size_t> q_;
 };
 
-TEST_F(QueueTest, IsEmpty) {
-    EXPECT_EQ( q_.size(), 10 );
-}
+TEST_F(QueueTest, IsEmpty) { EXPECT_EQ(q_.size(), 10); }
 
 TEST_F(QueueTest, DequeueWorks) {
-    EXPECT_EQ( q_.size(), 10 );
+    EXPECT_EQ(q_.size(), 10);
 
     std::size_t i = 9;
     while (auto value = q_.Dequeue()) {
-        EXPECT_EQ( value, i-- );
+        EXPECT_EQ(value, i--);
     }
 }
 

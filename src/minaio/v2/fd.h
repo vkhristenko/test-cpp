@@ -9,12 +9,8 @@ namespace minaio::v2 {
 class FD final {
 public:
     constexpr FD() noexcept = default;
-    constexpr explicit FD(int fd) noexcept
-        : fd_{fd}
-    {}
-    constexpr FD(FD&& rhs) noexcept
-        : fd_{rhs.release()}
-    {}
+    constexpr explicit FD(int fd) noexcept : fd_{fd} {}
+    constexpr FD(FD&& rhs) noexcept : fd_{rhs.release()} {}
     constexpr FD& operator=(FD&& rhs) noexcept {
         close();
         fd_ = rhs.release();
@@ -26,9 +22,9 @@ public:
     ~FD() noexcept { close(); }
 
     constexpr int fd() const noexcept { return fd_; }
-    void close() noexcept  {
-        core::ErrorOr<void> e {};
-        
+    void close() noexcept {
+        core::ErrorOr<void> e{};
+
         this->close(e);
         TCPP_ABORT_IF(!e.ok(), e.ErrorUnsafe().to_string());
     }
@@ -53,9 +49,9 @@ public:
     }
 
 private:
-    int fd_ {kInvalid};
+    int fd_{kInvalid};
 
     constexpr static int kInvalid = -1;
 };
 
-}
+}  // namespace minaio::v2

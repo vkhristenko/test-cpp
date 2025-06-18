@@ -1,10 +1,9 @@
 #pragma once
 
 #include "core/error.h"
-
-#include "minaio/v2/error_details.h"
 #include "minaio/v2/context.h"
 #include "minaio/v2/endpoint.h"
+#include "minaio/v2/error_details.h"
 #include "minaio/v2/fd.h"
 
 namespace minaio::v2 {
@@ -19,13 +18,16 @@ public:
     DatagramSocket& operator=(DatagramSocket&&);
     ~DatagramSocket() noexcept { Close(); }
 
-    template<typename Callable>
-        // requires AsyncCompletionHandler<std::decay_t<Callable>, ErrorOr<std::size_t>>
+    template <typename Callable>
+    // requires AsyncCompletionHandler<std::decay_t<Callable>,
+    // ErrorOr<std::size_t>>
     void AsyncReadFrom(void*, std::size_t, Endpoint*, Callable&&) noexcept;
 
-    template<typename Callable>
-        // requires AsyncCompletionHandler<std::decay_t<Callable>, ErrorOr<std::size_t>>
-    void AsyncWriteTo(void const*, std::size_t, Endpoint const&, Callable&&) noexcept;
+    template <typename Callable>
+    // requires AsyncCompletionHandler<std::decay_t<Callable>,
+    // ErrorOr<std::size_t>>
+    void AsyncWriteTo(void const*, std::size_t, Endpoint const&,
+                      Callable&&) noexcept;
 
     void Close() noexcept;
 
@@ -55,34 +57,34 @@ private:
     core::SmallFunction<void(core::ErrorOr<std::size_t>)> tx_ch_;
 };
 
-template<typename Callable>
-void DatagramSocket::AsyncReadFrom(void* buffer, std::size_t size, Endpoint* e, Callable&& ch) noexcept {
+template <typename Callable>
+void DatagramSocket::AsyncReadFrom(void* buffer, std::size_t size, Endpoint* e,
+                                   Callable&& ch) noexcept {
     if (!state_) {
-        ctx_->Enqueue([ch = std::forward<Callable>(ch)]{
-            ch(TCPP_MAKE_ERROR(NetUserErrorDetails{NetUserErrorDetails::Code::kClosedFD}));
+        ctx_->Enqueue([ch = std::forward<Callable>(ch)] {
+            ch(TCPP_MAKE_ERROR(
+                NetUserErrorDetails{NetUserErrorDetails::Code::kClosedFD}));
         });
-        return ;
+        return;
     }
 
     rx_ch_ = std::forward<Callable>(ch);
-    state_->StartRead(buffer, size, e); 
+    state_->StartRead(buffer, size, e);
 }
 
-template<typename Callable>
-void DatagramSocket::AsyncWriteTo(
-        void const* buffer, 
-        std::size_t size, 
-        Endpoint const& u,
-        Callable&& ch) noexcept {
+template <typename Callable>
+void DatagramSocket::AsyncWriteTo(void const* buffer, std::size_t size,
+                                  Endpoint const& u, Callable&& ch) noexcept {
     if (!state_) {
-        ctx_->Enqueue([ch = std::forward<Callable>(ch)]{
-            ch(TCPP_MAKE_ERROR(NetUserErrorDetails{NetUserErrorDetails::Code::kClosedFD}));
+        ctx_->Enqueue([ch = std::forward<Callable>(ch)] {
+            ch(TCPP_MAKE_ERROR(
+                NetUserErrorDetails{NetUserErrorDetails::Code::kClosedFD}));
         });
-        return ;
+        return;
     }
 
     tx_ch_ = std::forward<Callable>(ch);
     state_->StartWrite(buffer, size, u);
 }
 
-}
+}  // namespace minaio::v2

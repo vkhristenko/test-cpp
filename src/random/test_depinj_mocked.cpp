@@ -1,7 +1,7 @@
 #include <iostream>
 
 struct IAsyncStream {
-    template<typename Callable>
+    template <typename Callable>
     void asyncGet(Callable&& ch) {
         std::cout << __PRETTY_FUNCTION__ << std::endl;
         ch();

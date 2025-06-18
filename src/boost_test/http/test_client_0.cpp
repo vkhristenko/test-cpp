@@ -1,17 +1,14 @@
-#include "bext/utils/aliases.h"
-
 #include <iostream>
 #include <memory>
 
-struct ClientSession : std::enable_shared_from_this<ClientSession> {
-    ClientSession(::basio::io_context& ctx, ::basio::ip::tcp::endpoint&& endpoint)
-        : ctx_{ctx}
-        , endpoint_{std::move(endpoint)}
-    {
-    }
+#include "bext/utils/aliases.h"
 
-    void start() {
-    }
+struct ClientSession : std::enable_shared_from_this<ClientSession> {
+    ClientSession(::basio::io_context& ctx,
+                  ::basio::ip::tcp::endpoint&& endpoint)
+        : ctx_{ctx}, endpoint_{std::move(endpoint)} {}
+
+    void start() {}
 
     ::basio::io_context& ctx_;
     ::basio::ip::tcp::endpoint endpoint_;
@@ -28,7 +25,8 @@ int main(int argc, char** argv) {
 
     ::basio::io_context ctx;
 
-    auto client_session = std::make_shared<ClientSession>(ctx, ::basio::ip::tcp::endpoint{address, port});
+    auto client_session = std::make_shared<ClientSession>(
+        ctx, ::basio::ip::tcp::endpoint{address, port});
     client_session->start();
 
     while (1) {

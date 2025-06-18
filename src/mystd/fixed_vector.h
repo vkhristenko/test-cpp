@@ -2,8 +2,7 @@
 
 namespace mystd {
 
-template<typename T, std::size_t N>
-class FixedVector {
-};
+template <typename T, std::size_t N>
+class FixedVector {};
 
-}
+}  // namespace mystd

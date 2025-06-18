@@ -1,9 +1,8 @@
 #include <iostream>
 
 int main() {
-
     char str[] = "some string";
-   
+
     // just a simple way to get a size of the above string
     // iterate until u find the zero-termination char
     int size = 0;
@@ -12,7 +11,7 @@ int main() {
     size--;
 
     int n = 0;
-    for (int i=0; i<size; i++) {
+    for (int i = 0; i < size; i++) {
         if (str[i] == '(') {
             n++;
         }

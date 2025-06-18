@@ -1,6 +1,7 @@
 #include <iostream>
 
-// check fibonacci values here for testing https://en.wikipedia.org/wiki/Fibonacci_sequence
+// check fibonacci values here for testing
+// https://en.wikipedia.org/wiki/Fibonacci_sequence
 int main() {
     int A;
     std::cin >> A;

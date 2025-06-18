@@ -8,4 +8,4 @@ std::string& getStaticMember();
 
 std::string_view const& getStaticMemberStringView();
 
-}
+}  // namespace one

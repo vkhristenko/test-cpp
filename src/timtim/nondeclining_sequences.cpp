@@ -10,7 +10,7 @@ int main() {
     int i = 0;
     int j = 0;
     int k = 0;
-    while (i<N1 && j<N2) {
+    while (i < N1 && j < N2) {
         if (seq1[i] < seq2[j]) {
             seq3[k] = seq1[i];
             i++;
@@ -22,19 +22,19 @@ int main() {
         k++;
     }
 
-    for (int ii=i; ii<N1; ii++) {
+    for (int ii = i; ii < N1; ii++) {
         seq3[k] = seq1[ii];
         k++;
     }
 
-    for (int jj=j; jj<N2; j++) {
+    for (int jj = j; jj < N2; j++) {
         seq3[k] = seq2[jj];
         k++;
     }
 
-    for (int i=0; i<N1+N2; i++) {
+    for (int i = 0; i < N1 + N2; i++) {
         std::cout << seq3[i];
-        if (i != N1+N2) {
+        if (i != N1 + N2) {
             std::cout << " ";
         }
     }

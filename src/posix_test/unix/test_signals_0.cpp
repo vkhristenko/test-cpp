@@ -1,7 +1,7 @@
-#include <iostream>
-#include <thread>
 #include <chrono>
 #include <csignal>
+#include <iostream>
+#include <thread>
 
 #include "fmt/core.h"
 

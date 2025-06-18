@@ -12,13 +12,9 @@ struct Derived : protected Base {
 };
 
 struct Access {
-    static int GetA(Base& base) {
-        return base.a;
-    }
+    static int GetA(Base& base) { return base.a; }
 
-    static int GetA(Derived& d) {
-        return d.a;
-    }
+    static int GetA(Derived& d) { return d.a; }
 };
 
 void Test0() {

@@ -1,65 +1,61 @@
-#include <string>
-#include <list>
-#include <iostream>
 #include <algorithm>
- 
+#include <iostream>
+#include <list>
+#include <string>
+
 class Editor {
- 
- 
 public:
-    Editor() {
-        cursor_ = text_.begin();
-    }
- 
+    Editor() { cursor_ = text_.begin(); }
+
     void Left() {
-        if (cursor_ != text_.begin())
-            --cursor_;
+        if (cursor_ != text_.begin()) --cursor_;
     }
- 
+
     void Right() {
-        if (cursor_ != text_.end())
-            ++cursor_;
+        if (cursor_ != text_.end()) ++cursor_;
     }
- 
+
     void Insert(char token) {
         cursor_ = text_.insert(cursor_, token);
         ++cursor_;
     }
- 
+
     void Cut(size_t tokens = 1) {
         clipboard_.clear();
-        auto end = std::next(cursor_, std::min(tokens, static_cast<size_t>(std::distance(cursor_, text_.end()))));
+        auto end = std::next(cursor_,
+                             std::min(tokens, static_cast<size_t>(std::distance(
+                                                  cursor_, text_.end()))));
         std::copy(cursor_, end, std::back_inserter(clipboard_));
         cursor_--;
         text_.erase(std::next(cursor_), end);
         cursor_ = std::next(cursor_);
     }
- 
+
     void Copy(size_t tokens = 1) {
         clipboard_.clear();
         auto end = std::next(cursor_, tokens);
         std::copy(cursor_, end, std::back_inserter(clipboard_));
     }
- 
+
     void Paste() {
         if (!clipboard_.empty()) {
-            cursor_ = text_.insert(cursor_, clipboard_.begin(), clipboard_.end());
+            cursor_ =
+                text_.insert(cursor_, clipboard_.begin(), clipboard_.end());
 
-            for (size_t i=0; i<clipboard_.size(); i++) {
+            for (size_t i = 0; i < clipboard_.size(); i++) {
                 ++cursor_;
             }
         }
     }
- 
+
     std::string GetText() const {
         return std::string(text_.begin(), text_.end());
     }
- 
+
 private:
-    std::list<char> text_;        
-    std::list<char> clipboard_;    
-    std::list<char>::iterator cursor_; 
- 
+    std::list<char> text_;
+    std::list<char> clipboard_;
+    std::list<char>::iterator cursor_;
 };
 
 void Test0() {
@@ -69,14 +65,14 @@ void Test0() {
         editor.Insert(c);
     }
     std::cout << editor.GetText() << std::endl;
-    
-    for (int i=0; i<3; i++) {
+
+    for (int i = 0; i < 3; i++) {
         editor.Left();
     }
 
     editor.Cut(2);
     std::cout << editor.GetText() << std::endl;
-    
+
     editor.Insert('w');
     std::cout << editor.GetText() << std::endl;
 }
@@ -88,12 +84,14 @@ void Test1() {
         editor.Insert(c);
     }
     std::cout << editor.GetText() << std::endl;
-    // Текущее состояние редактора: ⁠ hello, world| ⁠
+    // Текущее состояние редактора: ⁠ hello,
+    // world| ⁠
     for (size_t i = 0; i < text.size(); ++i) {
         editor.Left();
     }
     std::cout << editor.GetText() << std::endl;
-    // Текущее состояние редактора: ⁠ |hello, world ⁠
+    // Текущее состояние редактора: ⁠ |hello,
+    // world ⁠
     editor.Cut(7);
     std::cout << editor.GetText() << std::endl;
     // Текущее состояние редактора: ⁠ |world ⁠
@@ -107,18 +105,21 @@ void Test1() {
     std::cout << editor.GetText() << std::endl;
     editor.Insert(' ');
     std::cout << editor.GetText() << std::endl;
-    // Текущее состояние редактора: ⁠ world, | ⁠
+    // Текущее состояние редактора: ⁠ world,
+    // | ⁠
     editor.Paste();
     std::cout << editor.GetText() << std::endl;
-    // Текущее состояние редактора: ⁠ world, hello, | ⁠
+    // Текущее состояние редактора: ⁠ world, hello,
+    // | ⁠
     editor.Left();
     std::cout << editor.GetText() << std::endl;
     editor.Left();
     std::cout << editor.GetText() << std::endl;
-    //Текущее состояние редактора: `world, hello|, `
+    // Текущее состояние редактора: `world, hello|, `
     editor.Cut(3);  // Будут вырезаны 2 символа
     std::cout << editor.GetText() << std::endl;
-    // Текущее состояние редактора: ⁠ world, hello| ⁠
+    // Текущее состояние редактора: ⁠ world,
+    // hello| ⁠
     std::cout << editor.GetText();
 }
 

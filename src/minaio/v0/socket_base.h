@@ -1,14 +1,12 @@
 #pragma once
 
-#include <unordered_map>
 #include <queue>
 #include <string>
+#include <unordered_map>
 
-#include "fmt/core.h"
-
-#include "core/result.h"
 #include "core/macros.h"
-
+#include "core/result.h"
+#include "fmt/core.h"
 #include "minaio/endpoint.h"
 
 namespace minaio {
@@ -18,14 +16,12 @@ namespace minaio {
 //
 class SocketBase {
 public:
-    explicit SocketBase(int fd)
-        : fd_{fd}
-    {
+    explicit SocketBase(int fd) : fd_{fd} {
         TCPP_PRINT_PRETTY_FUNCTION();
         // passing a negative fd sets invalid state
         if (fd_ < 0) {
             fd_ = -1;
-            return ;
+            return;
         }
 
         SetNonBlocking();
@@ -60,12 +56,12 @@ public:
     int Descriptor() const noexcept { return fd_; }
 
     bool IsOpen() const noexcept { return fd_ > 0; }
-    
+
     void Close() noexcept {
         TCPP_PRINT_PRETTY_FUNCTION();
         DoClose();
     }
-   
+
 protected:
     void Create() noexcept {
         fd_ = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -87,4 +83,4 @@ protected:
     int fd_;
 };
 
-}
+}  // namespace minaio

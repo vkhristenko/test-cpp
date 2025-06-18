@@ -1,33 +1,30 @@
 #pragma once
 
-#include "core/macros.h"
-
 #include <cstdlib>
 #include <utility>
+
+#include "core/macros.h"
 
 namespace core {
 
 namespace details {
 
-template<typename R, typename... Args>
-using FreeOrStaticFunctionPtr = R(*)(Args...);
+template <typename R, typename... Args>
+using FreeOrStaticFunctionPtr = R (*)(Args...);
 
 }
 
-template<std::size_t kMaxObjectSize = 64>
+template <std::size_t kMaxObjectSize = 64>
 class SmallTypeErasedBase {
 public:
     SmallTypeErasedBase() = default;
-    inline SmallTypeErasedBase(SmallTypeErasedBase const& r) 
-        : policy_{r.policy_}
-    {
+    inline SmallTypeErasedBase(SmallTypeErasedBase const& r)
+        : policy_{r.policy_} {
         if (policy_) {
             policy_(data_, nullptr, r.data_);
         }
     }
-    inline SmallTypeErasedBase(SmallTypeErasedBase&& r) 
-        : policy_{r.policy_}
-    {
+    inline SmallTypeErasedBase(SmallTypeErasedBase&& r) : policy_{r.policy_} {
         if (policy_) {
             policy_(data_, std::move(r).data_, nullptr);
         }
@@ -48,29 +45,27 @@ public:
         }
         return *this;
     }
-    ~SmallTypeErasedBase() {
-        destruct();
-    }
+    ~SmallTypeErasedBase() { destruct(); }
 
-    template<typename F>
+    template <typename F>
     constexpr static bool CanStore() noexcept {
         return sizeof(F) <= kMaxObjectSize;
     }
 
-    template<
-        typename F,
-        typename = typename std::enable_if<
-            !std::is_same<typename std::decay<F>::type, SmallTypeErasedBase>::value
-            && !std::is_base_of<SmallTypeErasedBase, typename std::decay<F>::type>::value
-            && SmallTypeErasedBase::CanStore<F>()
-        >::type
-    >
+    template <typename F,
+              typename = typename std::enable_if<
+                  !std::is_same<typename std::decay<F>::type,
+                                SmallTypeErasedBase>::value &&
+                  !std::is_base_of<SmallTypeErasedBase,
+                                   typename std::decay<F>::type>::value &&
+                  SmallTypeErasedBase::CanStore<F>()>::type>
     SmallTypeErasedBase(F&& f) {
         using DecayedType = typename std::decay<F>::type;
         new (data_) DecayedType{std::forward<F>(f)};
 
         struct __Policy {
-            static void Apply(char* dest, char* move_src, char const* copy_src) {
+            static void Apply(char* dest, char* move_src,
+                              char const* copy_src) {
                 using TargetType = F;
                 using DecayedTargetType = typename std::decay<TargetType>::type;
 
@@ -80,16 +75,17 @@ public:
                 if (move_src) {
                     auto r = reinterpret_cast<DecayedTargetType*>(move_src);
                     new (dest) DecayedTargetType{std::move(*r)};
-                    return ;
+                    return;
                 }
 
                 //
                 // cp ctor
                 //
                 if (copy_src) {
-                    auto r = reinterpret_cast<DecayedTargetType const*>(copy_src);
+                    auto r =
+                        reinterpret_cast<DecayedTargetType const*>(copy_src);
                     new (dest) DecayedTargetType{*r};
-                    return ;
+                    return;
                 }
 
                 //
@@ -102,15 +98,14 @@ public:
 
         policy_ = &__Policy::Apply;
     }
-    
-    template<
-        typename F,
-        typename = typename std::enable_if<
-            !std::is_same<typename std::decay<F>::type, SmallTypeErasedBase>::value
-            && !std::is_base_of<SmallTypeErasedBase, typename std::decay<F>::type>::value
-            && SmallTypeErasedBase::CanStore<F>()
-        >::type
-    >
+
+    template <typename F,
+              typename = typename std::enable_if<
+                  !std::is_same<typename std::decay<F>::type,
+                                SmallTypeErasedBase>::value &&
+                  !std::is_base_of<SmallTypeErasedBase,
+                                   typename std::decay<F>::type>::value &&
+                  SmallTypeErasedBase::CanStore<F>()>::type>
     SmallTypeErasedBase& operator=(F&& f) {
         SmallTypeErasedBase tmp = std::forward<F>(f);
         *this = std::move(tmp);
@@ -131,7 +126,8 @@ private:
 
 protected:
     char data_[kMaxObjectSize];
-    details::FreeOrStaticFunctionPtr<void, char*, char*, char const*> policy_ = nullptr;
+    details::FreeOrStaticFunctionPtr<void, char*, char*, char const*> policy_ =
+        nullptr;
 };
 
-}
+}  // namespace core

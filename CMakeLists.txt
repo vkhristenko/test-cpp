@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.26)
 project (testcpp LANGUAGES C CXX)
 
 # global settings
@@ -31,5 +31,29 @@ find_package(gTest REQUIRED)
 find_package(pybind11 REQUIRED)
 find_package(protobuf REQUIRED)
 find_package(gRPC REQUIRED)
+
+function(tcpp_add_unit_test)
+    cmake_parse_arguments(
+        tcpp_add_unit_test
+        ""
+        ""
+        "DEPS"
+        ${ARGN}
+    )
+    tcpp_fail_if_undefined(tcpp_add_unit_test_DEPS)
+    set(_deps ${tcpp_add_unit_test_DEPS})
+
+    file(GLOB _srcs CONFIGURE_DEPENDS *.cpp)
+    tcpp_target_name(_target)
+    add_executable(${_target} ${_srcs})
+    target_link_libraries(
+        ${_target}
+        PUBLIC
+            ${_deps}
+            GTest::gtest
+            GTest::gtest_main
+            GTest::gmock
+    )
+endfunction()
 
 tcpp_auto_addsubdirs(src)

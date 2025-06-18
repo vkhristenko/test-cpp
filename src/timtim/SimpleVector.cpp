@@ -8,36 +8,23 @@ struct ReserveTag {
     size_t capacity;
 };
 
-ReserveTag Reserve(size_t capacity) {
-    return ReserveTag(capacity);
-}
+ReserveTag Reserve(size_t capacity) { return ReserveTag(capacity); }
 
-template<typename T>
+template <typename T>
 struct SimpleVector {
-    SimpleVector() {
-    }
+    SimpleVector() {}
 
-    SimpleVector(ReserveTag) {
+    SimpleVector(ReserveTag) {}
 
-    }
+    void Reserve(size_t capacity) {}
 
-    void Reserve(size_t capacity) {
-    }
+    size_t GetCapacity() { return 0; }
 
-    size_t GetCapacity() {
-        return 0;
-    }
+    bool IsEmpty() const { return true; }
 
-    bool IsEmpty() const {
-        return true;
-    }
+    size_t GetSize() { return 0; }
 
-    size_t GetSize() {
-        return 0;
-    }
-
-    void PushBack(T const&) {
-    }
+    void PushBack(T const&) {}
 
     T const& operator[](size_t) {
         static T t;

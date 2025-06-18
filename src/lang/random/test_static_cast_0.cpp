@@ -13,13 +13,11 @@ struct Base2 {
 };
 
 struct Data : Base1, Base2 {
-    double x,y,z;
+    double x, y, z;
     char data[10];
 };
 
-int Test0() {
-    return sizeof(Data);
-}
+int Test0() { return sizeof(Data); }
 
 void Test1() {
 #if defined(FOR_RUNNING)
@@ -51,18 +49,16 @@ struct Derived : IBase1, IBase2 {
     double x, y, z;
 };
 
-int Test2() {
-    return sizeof(Derived);
-}
+int Test2() { return sizeof(Derived); }
 
 void Test3() {
 #if defined(FOR_RUNNING)
-    auto derived = Derived {};
-    
+    auto derived = Derived{};
+
     auto* base1 = static_cast<IBase1*>(&derived);
     auto* base2 = static_cast<IBase2*>(&derived);
 
-    std::cout << &derived<< "  " << base1 << "  " << base2 << std::endl;
+    std::cout << &derived << "  " << base1 << "  " << base2 << std::endl;
 #endif
 }
 

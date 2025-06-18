@@ -3,7 +3,7 @@
 #include <thread>
 
 std::mutex g_mu;
-bool g_done_1 {false}, g_done_2{false};
+bool g_done_1{false}, g_done_2{false};
 std::condition_variable g_cv;
 
 void WaitingThreadRunner() {

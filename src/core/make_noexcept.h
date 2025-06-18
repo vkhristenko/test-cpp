@@ -1,17 +1,17 @@
 #pragma once
 
-#include "core/error.h"
-
 #include <exception>
 #include <type_traits>
+
+#include "core/error.h"
 
 namespace core {
 
 namespace details {
 
-template<typename F>
-auto make_noexcept_impl(F&& f) noexcept -> ErrorOr<typename std::invoke_result_t<F>>
-{
+template <typename F>
+auto make_noexcept_impl(F&& f) noexcept
+    -> ErrorOr<typename std::invoke_result_t<F>> {
     using ReturnType = typename std::invoke_result_t<F>;
 
     try {
@@ -28,16 +28,14 @@ auto make_noexcept_impl(F&& f) noexcept -> ErrorOr<typename std::invoke_result_t
     }
 }
 
-}
+}  // namespace details
 
-}
+}  // namespace core
 
 #define TCPP_MAKE_NOEXCEPT(...) TCPP_MAKE_NOEXCEPT_IMPL((__VA_ARGS__))
-#define TCPP_MAKE_NOEXCEPT_IMPL(EXPR) \
-    [&]() noexcept -> ::core::ErrorOr<typename std::decay_t<decltype(EXPR)>> \
-    { \
-        auto call = [&]() -> typename std::decay_t<decltype(EXPR)> { \
-            return EXPR; \
-        }; \
-        return ::core::details::make_noexcept_impl(std::move(call)); \
+#define TCPP_MAKE_NOEXCEPT_IMPL(EXPR)                                          \
+    [&]() noexcept -> ::core::ErrorOr<typename std::decay_t<decltype(EXPR)>> { \
+        auto call = [&]() ->                                                   \
+            typename std::decay_t<decltype(EXPR)> { return EXPR; };            \
+        return ::core::details::make_noexcept_impl(std::move(call));           \
     }()

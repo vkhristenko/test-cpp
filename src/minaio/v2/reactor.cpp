@@ -4,10 +4,8 @@
 
 namespace minaio::v2 {
 
-void Reactor::Add(
-        int fd, 
-        std::function<void(std::uint8_t)> fd_handler,
-        std::uint8_t fd_flag) noexcept {
+void Reactor::Add(int fd, std::function<void(std::uint8_t)> fd_handler,
+                  std::uint8_t fd_flag) noexcept {
     /// TODO propogate failure to the user in case flags do not make snse
     pollfd pfd;
     pfd.fd = fd;
@@ -28,10 +26,10 @@ void Reactor::Poll() noexcept {
     auto const re = poll(fd_data_.data(), fd_data_.size(), 0);
     TCPP_ABORT_IF(re < 0, "poll failed!");
     if (re == 0) {
-        return ;
+        return;
     }
 
-    for (std::size_t i=0; i<fd_data_.size();) {
+    for (std::size_t i = 0; i < fd_data_.size();) {
         std::uint8_t event = 0u;
 
         if (fd_data_[i].revents & POLLIN) {
@@ -46,10 +44,10 @@ void Reactor::Poll() noexcept {
             event |= static_cast<std::uint8_t>(ReactorEvent::kClose);
         }
 
-        /// TODO 
+        /// TODO
         /// it's probably better to have access to an event loop and to enqueue
-        /// callbacks. Otherwise we need to think about a possibility a user removing
-        /// an fd during the iteration.
+        /// callbacks. Otherwise we need to think about a possibility a user
+        /// removing an fd during the iteration.
         auto& handler = fd_handlers_[fd_data_[i].fd];
         auto const size = fd_data_.size();
         handler(event);
@@ -60,4 +58,4 @@ void Reactor::Poll() noexcept {
     }
 }
 
-}
+}  // namespace minaio::v2

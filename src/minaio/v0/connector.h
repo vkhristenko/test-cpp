@@ -1,18 +1,16 @@
 #pragma once
 
-#include <stdexcept>
-#include <unordered_map>
 #include <queue>
+#include <stdexcept>
 #include <string>
+#include <unordered_map>
 
-#include "fmt/core.h"
-
-#include "core/result.h"
 #include "core/macros.h"
-
+#include "core/result.h"
+#include "fmt/core.h"
 #include "minaio/endpoint.h"
-#include "minaio/socket_base.h"
 #include "minaio/io_context.h"
+#include "minaio/socket_base.h"
 
 namespace minaio {
 
@@ -20,9 +18,7 @@ class Connector;
 
 class ConnectorReactor : public EventHandler {
 public:
-    ConnectorReactor(Connector& c) : c_{&c} {
-        TCPP_PRINT_PRETTY_FUNCTION();
-    }
+    ConnectorReactor(Connector& c) : c_{&c} { TCPP_PRINT_PRETTY_FUNCTION(); }
 
     void Handle(epoll_event const&) noexcept override;
 
@@ -42,7 +38,7 @@ private:
 };
 
 //
-// TODO 
+// TODO
 //
 // - Register sock for writability
 // - attemp connection upon AsyncConnect
@@ -51,10 +47,9 @@ private:
 class Connector final : public SocketBase {
 public:
     explicit Connector(IOContext& io_ctx)
-        : SocketBase()
-        , io_ctx_{&io_ctx}
-        , reactor_{new ConnectorReactor{*this}}
-    {
+        : SocketBase(),
+          io_ctx_{&io_ctx},
+          reactor_{new ConnectorReactor{*this}} {
         TCPP_PRINT_PRETTY_FUNCTION();
 
         if (!IsOpen()) {
@@ -70,15 +65,11 @@ public:
         }
     }
 
-    ~Connector() noexcept {
-        DoCloseSuper();
-    }
+    ~Connector() noexcept { DoCloseSuper(); }
 
-    template<typename Callable>
+    template <typename Callable>
     // Callable = void(Result<StreamSocket, std::string>)
-    void AsyncConnect(
-            Endpoint const& e,
-            Callable&& callable) noexcept {
+    void AsyncConnect(Endpoint const& e, Callable&& callable) noexcept {
         TCPP_PRINT_PRETTY_FUNCTION();
 
         //
@@ -88,7 +79,7 @@ public:
         reactor_->endpoint_ = e;
 
         //
-        // 
+        //
         //
         reactor_->Handle(epoll_event{0, {0}});
     }
@@ -101,7 +92,7 @@ public:
 private:
     void DoCloseSuper() noexcept {
         if (!IsOpen()) {
-            return ;
+            return;
         }
 
         reactor_->Deregister(io_ctx_, fd_);
@@ -119,7 +110,7 @@ void ConnectorReactor::Handle(epoll_event const& e) noexcept {
     TCPP_PRINT_PRETTY_FUNCTION();
 
     if (!ch_) {
-        return ;
+        return;
     }
 
     //
@@ -129,11 +120,12 @@ void ConnectorReactor::Handle(epoll_event const& e) noexcept {
         //
         // check failure/success of non-blocking connect;
         //
-        int result; 
-        auto r = getsockopt(c_->fd_, SOL_SOCKET, SO_ERROR, &result, sizeof(result));
+        int result;
+        auto r =
+            getsockopt(c_->fd_, SOL_SOCKET, SO_ERROR, &result, sizeof(result));
         if (r < 0) {
         }
-            
+
         if (re.HasError() || (re.HasValue() && re.ValueUnsafe().IsOpen())) {
             TCPP_PRINT_HERE();
             auto cb = [re = std::move(re), ch = std::move(ch_)]() {
@@ -142,10 +134,10 @@ void ConnectorReactor::Handle(epoll_event const& e) noexcept {
             EnqueueCompletionHandler(*c_->io_ctx_, std::move(cb));
             ch_ = nullptr;
             endpoint_ = std::nullopt;
-            return ;
+            return;
         }
 
-        return ;
+        return;
     }
 
     //
@@ -153,17 +145,19 @@ void ConnectorReactor::Handle(epoll_event const& e) noexcept {
     //
     // there is an error with this fd
     // - enqueue completion handler with error
-    // - close the connector, which in turn 
+    // - close the connector, which in turn
     //
-    //if (e.events & (EPOLLERR | EPOLLHUP)) {
+    // if (e.events & (EPOLLERR | EPOLLHUP)) {
     //    auto cb = [ch = std::move(ch_)]() {
-    //        ch(core::Result<StreamSocket, std::string>{"EPOLLERR or EPOLLHUP"});
+    //        ch(core::Result<StreamSocket, std::string>{"EPOLLERR or
+    //        EPOLLHUP"});
     //    };
     //    EnqueueCompletionHandler(*c_->io_ctx_, std::move(cb));
     //}
 }
 
-core::Result<StreamSocket, std::string> ConnectorReactor::DoAsyncConnectInitiation() noexcept {
+core::Result<StreamSocket, std::string>
+ConnectorReactor::DoAsyncConnectInitiation() noexcept {
     TCPP_PRINT_PRETTY_FUNCTION();
 
     //
@@ -174,4 +168,4 @@ core::Result<StreamSocket, std::string> ConnectorReactor::DoAsyncConnectInitiati
     //
 }
 
-}
+}  // namespace minaio

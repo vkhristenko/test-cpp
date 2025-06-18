@@ -5,7 +5,7 @@
 
 namespace mystd {
 
-template<typename T, typename Allocator = std::allocator<T>>
+template <typename T, typename Allocator = std::allocator<T>>
 class Vector final {
 public:
     /// default
@@ -13,13 +13,14 @@ public:
 
     /// default with allocator
     explicit Vector(Allocator const&) noexcept;
-    
-    /// 
-    explicit Vector(std::size_t count, T const& value = T(), Allocator const& = Allocator());
+
+    ///
+    explicit Vector(std::size_t count, T const& value = T(),
+                    Allocator const& = Allocator());
 
     /// construct from range
-    //template<typename Iterator>
-    //Vector(Iterator begin, Iterator end) noexcept;
+    // template<typename Iterator>
+    // Vector(Iterator begin, Iterator end) noexcept;
 
     /// copy
     Vector(Vector const&) noexcept;
@@ -38,7 +39,7 @@ public:
     bool empty() const noexcept;
 
     std::size_t capacity() const noexcept;
-    
+
     /// accessors
     /// TODO make them non-throwable
     T const& at(std::size_t) const;
@@ -64,36 +65,31 @@ public:
     void pop_back();
 
 private:
-    std::size_t size_ {0};
-    std::size_t capacity_ {0};
-    T* data_ {nullptr};
+    std::size_t size_{0};
+    std::size_t capacity_{0};
+    T* data_{nullptr};
     Allocator alloc_;
 };
 
-template<typename T, typename Allocator>
-Vector<T, Allocator>::Vector() noexcept(noexcept(Allocator{}))
-{
-}
+template <typename T, typename Allocator>
+Vector<T, Allocator>::Vector() noexcept(noexcept(Allocator{})) {}
 
-template<typename T, typename Allocator>
-Vector<T, Allocator>::Vector(Allocator const& alloc) noexcept
-    : alloc_{alloc}
-{
-}
+template <typename T, typename Allocator>
+Vector<T, Allocator>::Vector(Allocator const& alloc) noexcept : alloc_{alloc} {}
 
-template<typename T, typename Allocator>
-Vector<T, Allocator>::Vector(std::size_t count, T const& value, Allocator const& alloc)
-{
+template <typename T, typename Allocator>
+Vector<T, Allocator>::Vector(std::size_t count, T const& value,
+                             Allocator const& alloc) {
     capacity_ = count * 2;
     size_ = count;
     alloc_ = alloc;
     data_ = alloc_.allocate(capacity_);
 
-    /// construct 
+    /// construct
     auto ptr = data_;
-    for (std::size_t i=0; i<size_; i++, ptr++) {
+    for (std::size_t i = 0; i < size_; i++, ptr++) {
         new (ptr) T{value};
     }
 }
 
-}
+}  // namespace mystd

@@ -3,7 +3,7 @@
 #include <string>
 #include <string_view>
 
-template<typename T>
+template <typename T>
 struct ClassTemplateWithStaticDataMember {
     inline static std::string sMem = "something";
     constexpr static std::string_view sStringView = "something else";

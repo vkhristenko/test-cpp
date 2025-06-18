@@ -2,7 +2,7 @@ tcpp_module_name(_module)
 
 tcpp_target_form(_target_hdrs ${_module} hdrs)
 add_library(${_target_hdrs} INTERFACE common.h)
-target_link_libraries(${_target_hdrs} INTERFACE base_include cpp20)
+target_link_libraries(${_target_hdrs} INTERFACE base_include++base_include cpp20++cpp20)
 
 tcpp_target_form(_target_srcs1 ${_module} srcs1)
 add_library(${_target_srcs1} SHARED src1.cpp src1.h)

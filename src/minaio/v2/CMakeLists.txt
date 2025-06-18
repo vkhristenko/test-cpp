@@ -7,7 +7,7 @@ list(FILTER _srcs EXCLUDE REGEX .*unittests\/.*)
 
 tcpp_target_name(_target)
 add_library(${_target} ${_srcs} ${_hdrs})
-target_link_libraries(${_target} PUBLIC core cpp20)
+target_link_libraries(${_target} PUBLIC core++core cpp20++cpp20)
 
 add_subdirectory(mocks)
 add_subdirectory(unittests)

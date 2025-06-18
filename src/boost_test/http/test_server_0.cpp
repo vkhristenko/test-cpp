@@ -1,17 +1,13 @@
-#include "bext/utils/aliases.h"
-
 #include <iostream>
 #include <memory>
 
+#include "bext/utils/aliases.h"
+
 struct Listener : std::enable_shared_from_this<Listener> {
     Listener(::basio::io_context& ctx, ::basio::ip::tcp::endpoint&& endpoint)
-        : ctx_{ctx} 
-        , endpoint_{std::move(endpoint)}
-    {
-    }
+        : ctx_{ctx}, endpoint_{std::move(endpoint)} {}
 
-    void start() {
-    }
+    void start() {}
 
     ::basio::io_context& ctx_;
     ::basio::ip::tcp::endpoint endpoint_;
@@ -28,7 +24,8 @@ int main(int argc, char** argv) {
 
     ::basio::io_context ctx;
 
-    auto listener = std::make_shared<Listener>(ctx, ::basio::ip::tcp::endpoint{address, port});
+    auto listener = std::make_shared<Listener>(
+        ctx, ::basio::ip::tcp::endpoint{address, port});
     listener->start();
 
     while (true) {

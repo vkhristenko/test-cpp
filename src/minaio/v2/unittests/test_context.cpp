@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "minaio/v2/context.h"
 
 namespace minaio::v2 {
@@ -9,19 +8,15 @@ namespace {
 void StartOneIteration(Context& ctx, int& counter) noexcept {
     if (counter == 10) {
         ctx.Stop();
-        return ;
+        return;
     }
 
     counter++;
 
-    ctx.Enqueue(
-        [&ctx, &counter] {
-            StartOneIteration(ctx, counter);
-        }
-    );
+    ctx.Enqueue([&ctx, &counter] { StartOneIteration(ctx, counter); });
 }
 
-}
+}  // namespace
 
 TEST(MinaioSuite, ContextTestDummy) {
     Context ctx;
@@ -33,16 +28,14 @@ TEST(MinaioSuite, ContextTestDummy) {
         ctx.Poll();
     }
 
-    ASSERT_EQ( counter, 10);
+    ASSERT_EQ(counter, 10);
 }
 
-TEST(MinaioSuite, ContextOnly) {
-}
+TEST(MinaioSuite, ContextOnly) {}
 
-TEST(MinaioSuite, VerifyEnqueueSemantics) {
-}
+TEST(MinaioSuite, VerifyEnqueueSemantics) {}
 
-}
+}  // namespace minaio::v2
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

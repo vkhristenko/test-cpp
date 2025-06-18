@@ -15,4 +15,4 @@ void RunInThisThread(::basio::io_context& ctx) noexcept {
     }
 }
 
-}
+}  // namespace bext::utils

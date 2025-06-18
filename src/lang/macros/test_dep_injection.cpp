@@ -1,12 +1,11 @@
 #include <iostream>
 
-#define TCPP_INJECT_DEPENDENCY(INTERFACE) \
-    TCPP_INJECT_DEPENDENCY_##INTERFACE
+#define TCPP_INJECT_DEPENDENCY(INTERFACE) TCPP_INJECT_DEPENDENCY_##INTERFACE
 
 struct Underlying {
     Underlying() {}
 
-    void DoThis() { }
+    void DoThis() {}
 
     void DoThat() {}
 };
@@ -19,7 +18,7 @@ struct UnderlyingMock {
 
     void DoThat() {}
 };
-//#define TCPP_INJECT_DEPENDENCY_Underlying UnderlyingMock
+// #define TCPP_INJECT_DEPENDENCY_Underlying UnderlyingMock
 
 struct Something {
     Something() {}
@@ -29,13 +28,12 @@ struct Something {
     void DoThat() { under_.DoThat(); }
 
     //
-    // if 
+    // if
     //
     TCPP_INJECT_DEPENDENCY(Underlying) under_;
 };
 
-void Test0() {
-}
+void Test0() {}
 
 int main() {
     Test0();

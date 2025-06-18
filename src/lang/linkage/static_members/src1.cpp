@@ -9,10 +9,11 @@ std::string& getStaticMember() {
 }
 
 std::string_view const& getStaticMemberStringView() {
-    std::cout << &ClassTemplateWithStaticDataMember<int>::sStringView << std::endl;
+    std::cout << &ClassTemplateWithStaticDataMember<int>::sStringView
+              << std::endl;
     std::cout << (void*)SomeFunction << std::endl;
     PRINTME(&ClassTemplateWithStaticDataMember<int>::non_addressable);
     return ClassTemplateWithStaticDataMember<int>::sStringView;
 }
 
-}
+}  // namespace one

@@ -2,7 +2,6 @@
 
 namespace mystd {
 
-class Any {
-};
+class Any {};
 
-}
+}  // namespace mystd

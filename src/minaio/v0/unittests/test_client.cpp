@@ -1,21 +1,17 @@
-#include <iostream>
 #include <array>
+#include <iostream>
 #include <memory>
 
-#include "fmt/core.h"
-
-#include "core/result.h"
 #include "core/macros.h"
-
+#include "core/result.h"
+#include "fmt/core.h"
 #include "minaio/IOContext.h"
 
 using namespace core;
-using namespace minaio;                                                                 
+using namespace minaio;
 struct Connection {
-    explicit Connection(IOContext& io_ctx) 
-        : io_ctx_{io_ctx} 
-        , connector_{io_ctx_}
-    {
+    explicit Connection(IOContext& io_ctx)
+        : io_ctx_{io_ctx}, connector_{io_ctx_} {
         DoConnect();
     }
 
@@ -23,9 +19,7 @@ private:
     void DoConnect() {
         // TODO might be bad design
         connector_.AsyncConnect(
-            [this](Result<StreamSocket, std::string> re) {
-            }
-        );
+            [this](Result<StreamSocket, std::string> re) {});
     }
 
 private:

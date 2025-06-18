@@ -6,4 +6,4 @@ char NetErrorDetails::s_id = 0;
 char NetUserErrorDetails::s_id = 0;
 char PosixErrorDetails::s_id = 0;
 
-}
+}  // namespace minaio::v2

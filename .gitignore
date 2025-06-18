@@ -39,3 +39,7 @@ build*/
 src/uio
 
 src/private/
+
+*.sw[a-z]
+
+.vscode

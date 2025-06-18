@@ -11,14 +11,14 @@ int main() {
         std::cout << 0 << std::endl;
         return 0;
     }
-    
+
     if (ncols > 10 || ncols <= 0) {
         std::cout << 0 << std::endl;
         return 0;
     }
 
-    for (int irow=0; irow<nrows; irow++) {
-        for (int icol=0; icol<ncols; icol++) {
+    for (int irow = 0; irow < nrows; irow++) {
+        for (int icol = 0; icol < ncols; icol++) {
             int value;
             std::cin >> value;
             arr[irow][icol] = value;
@@ -26,18 +26,18 @@ int main() {
         }
     }
 
-    double average = (double)sum_all / (nrows*ncols);
+    double average = (double)sum_all / (nrows * ncols);
 
     bool found_one = false;
-    for (int icol=0; icol<ncols; icol++) {
+    for (int icol = 0; icol < ncols; icol++) {
         bool found = true;
 
-        for (int irow=0; irow<nrows; irow++) {
+        for (int irow = 0; irow < nrows; irow++) {
             found = found && arr[irow][icol] > average;
         }
 
         if (found) {
-            if (! found_one) {
+            if (!found_one) {
                 found_one = true;
                 std::cout << average;
             }
@@ -46,10 +46,10 @@ int main() {
         }
     }
 
-    if (! found_one) {
+    if (!found_one) {
         std::cout << 0;
     }
-        
+
     std::cout << std::endl;
 
     return 0;

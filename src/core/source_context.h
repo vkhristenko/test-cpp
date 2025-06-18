@@ -11,7 +11,9 @@ struct SourceLocation {
     std::uint32_t line{0};
 };
 
-}
+}  // namespace core
 
-#define TCPP_CURRENT_SOURCE_CONTEXT() \
-    ::core::SourceLocation{ .file_name{TCPP_FILE()}, .line{TCPP_LINE()}}
+#define TCPP_CURRENT_SOURCE_CONTEXT()                  \
+    ::core::SourceLocation {                           \
+        .file_name{TCPP_FILE()}, .line { TCPP_LINE() } \
+    }

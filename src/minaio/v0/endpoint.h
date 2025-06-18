@@ -1,13 +1,12 @@
 #pragma once
 
-#include <unordered_map>
 #include <queue>
 #include <string>
+#include <unordered_map>
 
-#include "fmt/core.h"
-
-#include "core/result.h"
 #include "core/macros.h"
+#include "core/result.h"
+#include "fmt/core.h"
 
 namespace minaio {
 
@@ -28,4 +27,4 @@ protected:
     unsigned int port_;
 };
 
-}
+}  // namespace minaio

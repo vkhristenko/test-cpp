@@ -1,10 +1,10 @@
 #include <iostream>
 #include <string_view>
 
-consteval 
+consteval
 
-void Test0() {
-}
+    void
+    Test0() {}
 
 int main() {
     Test0();

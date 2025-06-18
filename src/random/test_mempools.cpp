@@ -1,9 +1,9 @@
 #include <iostream>
 #include <queue>
-#include <vector>
 #include <string>
+#include <vector>
 
-template<typename T>
+template <typename T>
 class Pool {
 public:
     Pool() {}
@@ -20,14 +20,11 @@ public:
     struct ReturnToPoolDeleter {
         Pool* pool;
 
-        void operator()(T* ptr) {
-            pool->data_.push(ptr);  
-        }
+        void operator()(T* ptr) { pool->data_.push(ptr); }
     };
     using Deleter = ReturnToPoolDeleter;
 
-    std::unique_ptr<T, ReturnToPoolDeleter>
-    AllocateAndConstruct() noexcept {
+    std::unique_ptr<T, ReturnToPoolDeleter> AllocateAndConstruct() noexcept {
         if (data_.empty()) {
             std::cout << __PRETTY_FUNCTION__ << std::endl;
             /// TODO
@@ -37,31 +34,27 @@ public:
 
         auto front = data_.front();
         data_.pop();
-        
+
         return {front, ReturnToPoolDeleter{this}};
     }
 
 private:
-
     std::queue<T*> data_;
 };
 
-template<typename T>
+template <typename T>
 class PoolForShared {
 public:
     PoolForShared() {}
-    
+
     struct ReturnToPoolDeleter {
         PoolForShared* pool;
 
-        void operator()(T* ptr) {
-            pool->data_.push_back(ptr);  
-        }
+        void operator()(T* ptr) { pool->data_.push_back(ptr); }
     };
     using Deleter = ReturnToPoolDeleter;
-    
-    std::shared_ptr<T>
-    AllocateAndConstruct() noexcept {
+
+    std::shared_ptr<T> AllocateAndConstruct() noexcept {
         if (data_.empty()) {
             std::cout << __PRETTY_FUNCTION__ << std::endl;
             /// TODO
@@ -83,10 +76,10 @@ void TestSharedPool() {
 
     {
         std::vector<std::shared_ptr<std::string>> vs;
-        for (std::size_t i=0; i<10; i++) {
+        for (std::size_t i = 0; i < 10; i++) {
             vs.push_back(pool.AllocateAndConstruct());
         }
-        
+
         for (auto& v : vs) {
             *v = "some string";
         }
@@ -95,15 +88,15 @@ void TestSharedPool() {
             std::cout << *v << std::endl;
         }
     }
-    
+
     std::cout << "000" << std::endl;
-    
+
     {
         std::vector<std::shared_ptr<std::string>> vs;
-        for (std::size_t i=0; i<10; i++) {
+        for (std::size_t i = 0; i < 10; i++) {
             vs.push_back(pool.AllocateAndConstruct());
         }
-        
+
         for (auto& v : vs) {
             *v = "some string";
         }
@@ -118,8 +111,9 @@ void Test0() {
     Pool<std::string> pool;
 
     {
-        std::vector<std::unique_ptr<std::string, Pool<std::string>::Deleter>> vs;
-        for (std::size_t i=0; i<10; i++) {
+        std::vector<std::unique_ptr<std::string, Pool<std::string>::Deleter>>
+            vs;
+        for (std::size_t i = 0; i < 10; i++) {
             vs.push_back(pool.AllocateAndConstruct());
         }
 
@@ -133,10 +127,11 @@ void Test0() {
     }
 
     std::cout << "000" << std::endl;
-    
+
     {
-        std::vector<std::unique_ptr<std::string, Pool<std::string>::Deleter>> vs;
-        for (std::size_t i=0; i<10; i++) {
+        std::vector<std::unique_ptr<std::string, Pool<std::string>::Deleter>>
+            vs;
+        for (std::size_t i = 0; i < 10; i++) {
             vs.push_back(pool.AllocateAndConstruct());
         }
 

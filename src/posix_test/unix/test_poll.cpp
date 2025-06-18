@@ -2,13 +2,13 @@
 #include <vector>
 
 // TODO remove what's not needed
-#include <poll.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <netinet/in.h>
-#include <errno.h>
+#include <poll.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "fmt/core.h"
 
@@ -17,7 +17,7 @@ int RunServer(unsigned int port) {
     if (fd < 0) {
         ::fmt::print("socket error! error = {}\n", strerror(errno));
         return 1;
-    }   
+    }
 
     //
     // Make this file descriptor non blocking
@@ -39,7 +39,7 @@ int RunServer(unsigned int port) {
     if (bind(fd, reinterpret_cast<sockaddr const*>(&sin), sizeof(sin)) < 0) {
         ::fmt::print("bind error: {}\n", strerror(errno));
         return 1;
-    }   
+    }
     if (listen(fd, 10) < 0) {
         ::fmt::print("listen error {}", strerror(errno));
         return 1;
@@ -54,7 +54,7 @@ int RunServer(unsigned int port) {
     while (1) {
         // timeout of 0 => poll returns immediately even if no fds are ready
         auto ready = poll(all_pfds.data(), all_pfds.size(), 0);
-        
+
         if (ready == -1) {
             ::fmt::print("poll error: {}\n", strerror(errno));
             return 1;
@@ -68,8 +68,9 @@ int RunServer(unsigned int port) {
         if (all_pfds[0].revents & POLLIN) {
             auto sfd = accept(all_pfds[0].fd, nullptr, nullptr);
             if (sfd == -1) {
-                ::fmt::print("accept failed! chcking if this is just no conn!\n");
-                if (errno != EAGAIN && errno != EWOULDBLOCK){
+                ::fmt::print(
+                    "accept failed! chcking if this is just no conn!\n");
+                if (errno != EAGAIN && errno != EWOULDBLOCK) {
                     ::fmt::print("accept failed {}.\n", strerror(errno));
                     return 1;
                 }
@@ -83,6 +84,4 @@ int RunServer(unsigned int port) {
     }
 }
 
-int main() {
-    return RunServer(12345);
-}
+int main() { return RunServer(12345); }

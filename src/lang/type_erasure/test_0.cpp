@@ -5,14 +5,10 @@ struct Base;
 using FuncType = void(Base*);
 
 struct Base {
-    void run() {
-        func_(this);    
-    }
-   
+    void run() { func_(this); }
+
 protected:
-    Base(FuncType* func)  
-        : func_(func)
-    {}
+    Base(FuncType* func) : func_(func) {}
 
     FuncType* func_;
 };
@@ -32,34 +28,32 @@ void Test0() {
 }
 
 struct QueryBase {
-    virtual void const* ClassId() const noexcept {
-        return &s_id;
-    }
+    virtual void const* ClassId() const noexcept { return &s_id; }
 
     virtual bool isA(void const* class_id) const noexcept {
         return class_id == ClassId();
     }
 
-    template<typename T>
+    template <typename T>
     bool isA() const noexcept {
         return isA(T::ClassId());
     }
 
-    template<typename T>
+    template <typename T>
     T const* as() const noexcept {
-        if (! isA<T>()) {
+        if (!isA<T>()) {
             return nullptr;
         }
 
         return static_cast<T const*>(this);
     }
 
-    inline static char s_id = 0; 
+    inline static char s_id = 0;
     inline static void const* const kType = &s_id;
 };
 
 struct ByExchange : QueryBase {
-    ByExchange(size_t i) : i_{i} {} 
+    ByExchange(size_t i) : i_{i} {}
 
     inline static char s_id = 0;
     inline static void const* kType = &s_id;
@@ -73,12 +67,11 @@ struct BySecId : QueryBase {
 };
 
 void Test1() {
-    auto type = ByExchange {10};
-    [] (QueryBase const& query) {
+    auto type = ByExchange{10};
+    [](QueryBase const& query) {
         if (query.isA<ByExchange>()) {
             std::cout << "by exchange" << std::endl;
-        }
-        else if (query.isA<BySecId>()) {
+        } else if (query.isA<BySecId>()) {
             std::cout << "by sec id " << std::endl;
         } else {
             std::cout << "not supported" << std::endl;

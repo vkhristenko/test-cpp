@@ -6,4 +6,4 @@ class Endpoint {
 public:
 };
 
-}
+}  // namespace minaio::v2

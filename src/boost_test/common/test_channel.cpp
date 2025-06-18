@@ -1,25 +1,21 @@
 #include <boost/asio/use_awaitable.hpp>
 #include <iostream>
 
-#include "fmt/core.h"
-
-#include "boost/asio/experimental/awaitable_operators.hpp"
-
-#include "core/range.h"
-#include "core/macros.h"
-#include "bext/utils/ctx.h"
 #include "bext/utils/aliases.h"
 #include "bext/utils/channel.h"
+#include "bext/utils/ctx.h"
+#include "boost/asio/experimental/awaitable_operators.hpp"
+#include "core/macros.h"
+#include "core/range.h"
+#include "fmt/core.h"
 
 using namespace ::boost::asio::experimental::awaitable_operators;
 
 ::basio::awaitable<void> Produce(bext::utils::Channel<std::string>& ch, int n) {
     for (auto i : core::Range{n}) {
-        co_await ch.async_send(
-            ::bsys::error_code{},
-            std::string{"value = "} + std::to_string(i),
-            ::basio::use_awaitable
-        );
+        co_await ch.async_send(::bsys::error_code{},
+                               std::string{"value = "} + std::to_string(i),
+                               ::basio::use_awaitable);
         ::fmt::print("sent: {}", std::string{"value = "} + std::to_string(i));
     }
 }
@@ -31,14 +27,11 @@ using namespace ::boost::asio::experimental::awaitable_operators;
     }
 }
 
-::basio::awaitable<void> Test0(
-        ::basio::io_context& ctx) {
+::basio::awaitable<void> Test0(::basio::io_context& ctx) {
     TCPP_PRETTY_FUNCTION();
 
     bext::utils::Channel<std::string> ch{ctx};
-    co_await (
-        Consume(ch, 100) && Produce(ch, 100)
-    );
+    co_await (Consume(ch, 100) && Produce(ch, 100));
 
     co_return;
 }

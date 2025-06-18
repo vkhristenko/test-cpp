@@ -9,48 +9,42 @@ struct Coroutine : std::experimental::coroutine_handle<Promise> {
 };
 
 struct SuspendAlways {
-    bool await_ready() const noexcept { 
+    bool await_ready() const noexcept {
         TCPP_PRINT_HERE();
-        return false; 
+        return false;
     }
     void await_suspend(std::experimental::coroutine_handle<>) const noexcept {
         TCPP_PRINT_HERE();
     }
-    void await_resume() const noexcept {
-        TCPP_PRINT_HERE();
-    }
+    void await_resume() const noexcept { TCPP_PRINT_HERE(); }
 };
 
 struct Promise {
-    Coroutine get_return_object() { 
+    Coroutine get_return_object() {
         TCPP_PRINT_HERE();
-        return {Coroutine::from_promise(*this)}; 
+        return {Coroutine::from_promise(*this)};
     }
-    //std::experimental::suspend_always 
-    SuspendAlways
-    initial_suspend() noexcept { 
+    // std::experimental::suspend_always
+    SuspendAlways initial_suspend() noexcept {
         TCPP_PRINT_HERE();
-        return {}; 
+        return {};
     }
-    
-    //std::experimental::suspend_always 
-    SuspendAlways
-    final_suspend() noexcept { 
+
+    // std::experimental::suspend_always
+    SuspendAlways final_suspend() noexcept {
         TCPP_PRINT_HERE();
-        return {}; 
+        return {};
     }
 #if 0
     void return_void() {
         TCPP_PRINT_HERE();
     }
 #endif
-    void return_value(std::string&& str) { 
+    void return_value(std::string&& str) {
         TCPP_PRINT_HERE();
-        str_ = std::move(str); 
+        str_ = std::move(str);
     }
-    void unhandled_exception() {
-        TCPP_PRINT_HERE();
-    }
+    void unhandled_exception() { TCPP_PRINT_HERE(); }
 
     std::string str_;
 };
@@ -66,7 +60,7 @@ void Test0() {
     TCPP_PRINT_HERE();
     h.resume();
     TCPP_PRINT_HERE();
-    TCPP_PRINT_EXPR_RESULT( h.promise().str_ );
+    TCPP_PRINT_EXPR_RESULT(h.promise().str_);
     h.resume();
     TCPP_PRINT_HERE();
     h.destroy();

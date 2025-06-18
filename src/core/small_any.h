@@ -28,9 +28,8 @@ template<
         std::is_const<T>::value
     >::type
 >
-std::decay<T> const* small_any_cast(SmallAny<kMaxObjectSize> const* ptr) noexcept {
-    if (!ptr) {
-        return nullptr;
+std::decay<T> const* small_any_cast(SmallAny<kMaxObjectSize> const* ptr)
+noexcept { if (!ptr) { return nullptr;
     }
 
     auto const ti = std::type_index{typeid(T)};
@@ -42,4 +41,4 @@ std::decay<T> const* small_any_cast(SmallAny<kMaxObjectSize> const* ptr) noexcep
 }
 */
 
-}
+}  // namespace core

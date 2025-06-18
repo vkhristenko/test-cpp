@@ -1,35 +1,24 @@
+#include <boost/lockfree/spsc_queue.hpp>
 #include <iostream>
 #include <thread>
 #include <vector>
 
-#include <boost/lockfree/spsc_queue.hpp>
-
 struct IVisitor;
 
-
-struct IMsg 
-{
+struct IMsg {
     virtual ~IMsg() = default;
 
-    void in_use(bool value) {
-        in_use_ = value;
-    }
+    void in_use(bool value) { in_use_ = value; }
 
-    bool in_use() const {
-        return in_use_;
-    }
+    bool in_use() const { return in_use_; }
 
-    void setExtra(void* e) {
-        extra_ = e;
-    }
+    void setExtra(void* e) { extra_ = e; }
 
-    void* getExtra() const {
-        return extra_;
-    }
-    
+    void* getExtra() const { return extra_; }
+
     virtual void Accept(IVisitor&);
 
-    std::atomic<bool> in_use_ {false};
+    std::atomic<bool> in_use_{false};
     void* extra_{nullptr};
 };
 
@@ -42,7 +31,7 @@ struct IVisitor {
     virtual void Visit(Msg2&) { std::cout << __PRETTY_FUNCTION__ << std::endl; }
 };
 
-template<typename T>
+template <typename T>
 struct EnableMsgWithVisitor : IMsg {
     void Accept(IVisitor& visitor) override {
         visitor.Visit(static_cast<T&>(*this));
@@ -60,34 +49,31 @@ struct IMsgDeleter {
 struct Msg1 : EnableMsgWithVisitor<Msg1> {};
 struct Msg2 : EnableMsgWithVisitor<Msg2> {};
 
-void IMsg::Accept(IVisitor& visitor) {
-    visitor.Visit(*this);
-}
+void IMsg::Accept(IVisitor& visitor) { visitor.Visit(*this); }
 
-template<typename T>
+template <typename T>
 struct DefaultDeleter {
-    template<typename U>
+    template <typename U>
     DefaultDeleter(DefaultDeleter<U>&&) {}
 
-    template<typename U>
+    template <typename U>
     DefaultDeleter<T>& operator=(DefaultDeleter<U>&&) {
         return *this;
     }
 
-    void operator()(T* t) {
-        delete t;
-    }
+    void operator()(T* t) { delete t; }
 };
 
-template<typename T>
+template <typename T>
 struct Pool {
     std::vector<std::unique_ptr<T>> data_;
 
     std::unique_ptr<T, IMsgDeleter> AllocateAndConstruct() {
         for (auto& msg : data_) {
-            if (! msg->in_use()) {
+            if (!msg->in_use()) {
                 msg->in_use(true);
-                return std::unique_ptr<T, IMsgDeleter>{msg.get(), IMsgDeleter{}};
+                return std::unique_ptr<T, IMsgDeleter>{msg.get(),
+                                                       IMsgDeleter{}};
             }
         }
 
@@ -97,22 +83,23 @@ struct Pool {
     }
 
     Pool() : data_(100) {
-        for (auto& msg : data_ ) {
+        for (auto& msg : data_) {
             msg = std::make_unique<T>();
         }
     }
 };
 
-template<typename T, typename Deleter = DefaultDeleter<T>>
+template <typename T, typename Deleter = DefaultDeleter<T>>
 struct UniquePtrWrapper {
-    UniquePtrWrapper(std::unique_ptr<T, Deleter>&& ptr) : ptr_{std::move(ptr)}{}
+    UniquePtrWrapper(std::unique_ptr<T, Deleter>&& ptr)
+        : ptr_{std::move(ptr)} {}
 
     UniquePtrWrapper(UniquePtrWrapper const& rhs) {
         ptr_ = std::move(const_cast<UniquePtrWrapper&>(rhs).ptr_);
     }
-    UniquePtrWrapper& operator=(UniquePtrWrapper const& rhs) { 
+    UniquePtrWrapper& operator=(UniquePtrWrapper const& rhs) {
         ptr_ = std::move(const_cast<UniquePtrWrapper&>(rhs).ptr_);
-        return *this; 
+        return *this;
     }
     UniquePtrWrapper(UniquePtrWrapper&&) = default;
     UniquePtrWrapper& operator=(UniquePtrWrapper&&) = default;
@@ -121,16 +108,17 @@ struct UniquePtrWrapper {
 };
 
 void Test1() {
-    auto queue = boost::lockfree::spsc_queue<UniquePtrWrapper<IMsg, IMsgDeleter>>(100000);
+    auto queue =
+        boost::lockfree::spsc_queue<UniquePtrWrapper<IMsg, IMsgDeleter>>(
+            100000);
     Pool<IMsg> default_pool;
     Pool<Msg1> msg1_pool;
     Pool<Msg2> msg2_pool;
     auto visitor = IVisitor{};
 
     auto producer = std::thread{[&] {
-        size_t i=0;
-        while (true)
-        {
+        size_t i = 0;
+        while (true) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
 
             std::unique_ptr<IMsg, IMsgDeleter> msg;
@@ -144,12 +132,9 @@ void Test1() {
             msg->setExtra(reinterpret_cast<IVisitor*>(&visitor));
             i++;
 
-            if (! queue.push(std::move(msg)))
-            {
+            if (!queue.push(std::move(msg))) {
                 std::cout << "can't write" << std::endl;
-            }
-            else
-            {
+            } else {
                 std::cout << "pushed" << std::endl;
             }
         }
@@ -159,8 +144,9 @@ void Test1() {
         while (true) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
 
-            UniquePtrWrapper<IMsg, IMsgDeleter> msg_wrapper = std::unique_ptr<IMsg, IMsgDeleter>{nullptr};
-            if (! queue.pop(msg_wrapper)) {
+            UniquePtrWrapper<IMsg, IMsgDeleter> msg_wrapper =
+                std::unique_ptr<IMsg, IMsgDeleter>{nullptr};
+            if (!queue.pop(msg_wrapper)) {
                 std::cout << "can't read" << std::endl;
             } else {
                 auto msg = std::move(msg_wrapper.ptr_);
@@ -179,14 +165,10 @@ void Test0() {
 
     auto producer = std::thread{[&] {
         int i = 0;
-        while (true)
-        {
-            if (! queue.push(i++))
-            {
+        while (true) {
+            if (!queue.push(i++)) {
                 std::cout << "can't write" << std::endl;
-            }
-            else
-            {
+            } else {
                 std::cout << "pushed = " << i - 1 << std::endl;
             }
         }
@@ -195,10 +177,10 @@ void Test0() {
     auto consumer = std::thread{[&] {
         int i = 0;
         while (true) {
-            if (! queue.pop(i)) {
+            if (!queue.pop(i)) {
                 std::cout << "can't read" << std::endl;
             } else {
-                std::cout << "popped = "  << std::endl;
+                std::cout << "popped = " << std::endl;
             }
         }
     }};
@@ -208,7 +190,7 @@ void Test0() {
 }
 
 int main() {
-    ///Test0();
+    /// Test0();
     Test1();
 
     return 0;

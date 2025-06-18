@@ -8,4 +8,4 @@ struct ContextImplDefaultUTTraits {
     using ReactorType = Reactor;
 };
 
-}
+}  // namespace minaio::v2::details

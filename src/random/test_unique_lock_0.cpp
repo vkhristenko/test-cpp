@@ -3,11 +3,10 @@
 #include <thread>
 
 std::mutex g_mu;
-bool g_done_1 {false}, g_done_2{false};
+bool g_done_1{false}, g_done_2{false};
 std::condition_variable g_cv;
 
 void WaitingThreadRunner() {
-
     {
         std::unique_lock<std::mutex> lck{g_mu};
         while (!g_done_1) {
@@ -41,7 +40,7 @@ int main() {
         }
         std::cout << __LINE__ << std::endl;
     }
-    
+
     t.join();
 
     return 0;

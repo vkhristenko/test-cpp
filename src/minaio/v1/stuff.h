@@ -10,7 +10,7 @@ struct ExecutionContext {
         }
     }
 
-    template<typename Callable>
+    template <typename Callable>
     void Enqueue(Callable&& c) {
         funcs_.push(std::forward(c));
     }
@@ -21,8 +21,5 @@ struct ExecutionContext {
 struct EventService {
     EventService(ExecutionContext&);
 
-
-
     ExecutionContext* ctx_;
-
 };

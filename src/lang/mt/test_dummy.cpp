@@ -2,20 +2,19 @@
 #include <sstream>
 #include <thread>
 
-#include "fmt/core.h"
-
 #include "core/macros.h"
+#include "fmt/core.h"
 
 namespace fmt {
 
-template<>
+template <>
 struct formatter<std::thread::id> {
-    template<typename ParseContext>
+    template <typename ParseContext>
     constexpr auto parse(ParseContext& ctx) {
         return ctx.begin();
     }
 
-    template<typename FormatContext>
+    template <typename FormatContext>
     auto format(std::thread::id const& id, FormatContext& ctx) {
         std::stringstream ss;
         ss << id;
@@ -23,17 +22,17 @@ struct formatter<std::thread::id> {
     }
 };
 
-}
+}  // namespace fmt
 
 void Test0() {
-    std::thread t{[]{ 
+    std::thread t{[] {
         ::fmt::print("hello from thread {}\n", std::this_thread::get_id());
     }};
     t.join();
 }
 
 void Test1() {
-    std::thread t{[]{
+    std::thread t{[] {
         ::fmt::print("hello from thread {}\n", std::this_thread::get_id());
     }};
     auto a = std::move(t);

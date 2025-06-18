@@ -1,17 +1,15 @@
 #pragma once
 
-#include <unordered_map>
 #include <queue>
 #include <string>
+#include <unordered_map>
 
-#include "fmt/core.h"
-
-#include "core/result.h"
 #include "core/macros.h"
-
+#include "core/result.h"
+#include "fmt/core.h"
 #include "minaio/endpoint.h"
-#include "minaio/socket_base.h"
 #include "minaio/io_context.h"
+#include "minaio/socket_base.h"
 #include "minaio/stream_socket.h"
 
 namespace minaio {
@@ -20,9 +18,7 @@ class Acceptor;
 
 class AcceptorReactor : public EventHandler {
 public:
-    AcceptorReactor(Acceptor& a) : a_{a} {
-        TCPP_PRINT_PRETTY_FUNCTION();
-    }
+    AcceptorReactor(Acceptor& a) : a_{a} { TCPP_PRINT_PRETTY_FUNCTION(); }
 
     void Handle(epoll_event const&) noexcept override;
 
@@ -42,13 +38,10 @@ private:
 class Acceptor final : protected SocketBase {
 public:
     Acceptor(IOContext& io_ctx, Endpoint endpoint)
-        : SocketBase()
-        , io_ctx_{io_ctx}
-        , endpoint_{std::move(endpoint)}
-    {
+        : SocketBase(), io_ctx_{io_ctx}, endpoint_{std::move(endpoint)} {
         TCPP_PRINT_PRETTY_FUNCTION();
 
-        // 
+        //
         // make sure we have a valid fd
         //
         if (!IsOpen()) {
@@ -62,7 +55,8 @@ public:
         sin.sin_family = AF_INET;
         sin.sin_port = htons(endpoint_.port());
         sin.sin_addr = in_addr{0};
-        if (bind(fd_, reinterpret_cast<sockaddr const*>(&sin), sizeof(sin)) < 0) {
+        if (bind(fd_, reinterpret_cast<sockaddr const*>(&sin), sizeof(sin)) <
+            0) {
             ::fmt::print("bind error: {}\n", strerror(errno));
             throw std::runtime_error{"bind error"};
         }
@@ -85,16 +79,14 @@ public:
         }
     }
 
-    ~Acceptor() noexcept {
-        DoCloseSuper();
-    }
+    ~Acceptor() noexcept { DoCloseSuper(); }
 
-    template<typename Callable>
+    template <typename Callable>
     // Callable = void(Result<StreamSocket, std::string>)
     void AsyncAccept(Callable&& callable) noexcept {
         TCPP_PRINT_PRETTY_FUNCTION();
 
-        // 
+        //
         // completion handler implies async op in progress
         //
         reactor_->ch_ = std::move(callable);
@@ -113,7 +105,7 @@ public:
 private:
     void DoCloseSuper() noexcept {
         if (!IsOpen()) {
-            return ;
+            return;
         }
 
         reactor_->Deregister(io_ctx_, fd_);
@@ -134,12 +126,12 @@ void AcceptorReactor::Handle(epoll_event const&) noexcept {
     // if no async op was enqueued - skip this event
     //
     if (!ch_) {
-        return ;
+        return;
     }
 
     auto re = DoAsyncAcceptInitiation();
 
-    // 
+    //
     // if initiation completed
     //
     if (re.HasError() || (re.HasValue() && re.ValueUnsafe().IsOpen())) {
@@ -149,19 +141,20 @@ void AcceptorReactor::Handle(epoll_event const&) noexcept {
         };
         EnqueueCompletionHandler(a_.io_ctx_, std::move(cb));
         ch_ = nullptr;
-        return ;
+        return;
     }
 
     //
     // if initiation did not complete, wait again...
     //
 }
-    
-core::Result<SocketBase, std::string> AcceptorReactor::DoAsyncAcceptInitiation() noexcept {
+
+core::Result<SocketBase, std::string>
+AcceptorReactor::DoAsyncAcceptInitiation() noexcept {
     TCPP_PRINT_PRETTY_FUNCTION();
     auto client_sock = accept(a_.fd_, nullptr, nullptr);
     if (client_sock <= -1) {
-        if (errno != EAGAIN && errno != EWOULDBLOCK){
+        if (errno != EAGAIN && errno != EWOULDBLOCK) {
             ::fmt::print("accept failed {}.\n", strerror(errno));
             return std::string{strerror(errno)};
         }
@@ -172,4 +165,4 @@ core::Result<SocketBase, std::string> AcceptorReactor::DoAsyncAcceptInitiation()
     return SocketBase{client_sock};
 };
 
-}
+}  // namespace minaio

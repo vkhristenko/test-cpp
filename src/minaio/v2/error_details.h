@@ -5,7 +5,7 @@
 #include "core/error.h"
 
 namespace minaio::v2 {
-    
+
 class NetErrorDetails : public core::ErrorDetailsHelper<NetErrorDetails> {
 public:
     NetErrorDetails() = default;
@@ -24,7 +24,8 @@ private:
     static char s_id;
 };
 
-class NetUserErrorDetails final : public core::ErrorDetailsHelper<NetUserErrorDetails, NetErrorDetails> {
+class NetUserErrorDetails final
+    : public core::ErrorDetailsHelper<NetUserErrorDetails, NetErrorDetails> {
 public:
     enum class Code : std::uint8_t {
         kCancelledAsyncOp = 0,
@@ -49,7 +50,8 @@ private:
     static char s_id;
 };
 
-class PosixErrorDetails final : public core::ErrorDetailsHelper<PosixErrorDetails, NetErrorDetails> {
+class PosixErrorDetails final
+    : public core::ErrorDetailsHelper<PosixErrorDetails, NetErrorDetails> {
 public:
     PosixErrorDetails(int e) : errno_{e} {}
 
@@ -63,9 +65,7 @@ public:
         return ss.str();
     }
 
-    int error_number() const noexcept {
-        return errno_;
-    }
+    int error_number() const noexcept { return errno_; }
 
     std::string_view error_string_view() const noexcept {
         return strerror(errno_);
@@ -78,4 +78,4 @@ private:
     static char s_id;
 };
 
-}
+}  // namespace minaio::v2

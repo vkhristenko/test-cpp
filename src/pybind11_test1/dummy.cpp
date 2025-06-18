@@ -1,8 +1,6 @@
 #include "pybind11/pybind11.h"
 
-int add(int i, int j) {
-    return i+j;
-}
+int add(int i, int j) { return i + j; }
 
 struct Pet {
     Pet(std::string const& name) : name{name} {}
@@ -22,6 +20,5 @@ PYBIND11_MODULE(pybind11_test, m) {
     py::class_<Pet>(m, "Pet")
         .def(py::init<std::string const&>())
         .def("set", &Pet::set)
-        .def("get", &Pet::get)
-    ;
+        .def("get", &Pet::get);
 }

@@ -14,16 +14,12 @@ class B {
 
 class ATesting {
 public:
-    static auto const& Get(A const& a) {
-        return a.a;
-    }
+    static auto const& Get(A const& a) { return a.a; }
 };
 
 class BTesting {
 public:
-    static auto const& Get(B const& b) {
-        return b.a;
-    }
+    static auto const& Get(B const& b) { return b.a; }
 };
 
 void Test0() {

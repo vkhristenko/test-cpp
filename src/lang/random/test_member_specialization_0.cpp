@@ -3,24 +3,24 @@
 
 #include "core/macros.h"
 
-template<typename T>
+template <typename T>
 struct Factory {
-    template<typename... Args>
+    template <typename... Args>
     static T make(Args&&... args) {
         TCPP_PRINT_HERE();
         return T(std::forward<Args>(args)...);
     }
 };
 
-template<>
-template<>
+template <>
+template <>
 std::string Factory<std::string>::make(std::string const& s) {
     TCPP_PRINT_HERE();
     return s;
 }
 
-template<>
-template<>
+template <>
+template <>
 std::string Factory<std::string>::make(std::string&& s) {
     TCPP_PRINT_HERE();
     return s;
@@ -34,12 +34,12 @@ void Test0() {
     std::println("str={}", str1);
 }
 
-template<typename T>
+template <typename T>
 void Test1Impl(T) {
     TCPP_PRINT_HERE();
 }
 
-template<>
+template <>
 void Test1Impl<int>(int a) {
     TCPP_PRINT_HERE();
 }

@@ -5,9 +5,7 @@ protected:
     int a;
 };
 
-
-struct Derived : public Base {
-};
+struct Derived : public Base {};
 
 struct Derived2 : public Derived {
     using Base::a;

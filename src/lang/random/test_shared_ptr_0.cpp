@@ -1,9 +1,7 @@
 #include <iostream>
 
 struct Foo {
-    virtual ~Foo() {
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
-    }
+    virtual ~Foo() { std::cout << __PRETTY_FUNCTION__ << std::endl; }
 };
 
 struct Bar : Foo {};
@@ -15,9 +13,7 @@ struct Deleter {
     }
 };
 
-void Test0() {
-    std::shared_ptr<Foo> ptr{ new Bar{}, Deleter{}};
-}
+void Test0() { std::shared_ptr<Foo> ptr{new Bar{}, Deleter{}}; }
 
 int main() {
     Test0();

@@ -1,13 +1,11 @@
-#include <iostream>
 #include <deque>
-#include <unordered_set>
 #include <functional>
+#include <iostream>
 #include <memory>
+#include <unordered_set>
 
 struct IAsyncScope {
-    void Add(IAsyncScope* obj) {
-        children.insert(obj);
-    }
+    void Add(IAsyncScope* obj) { children.insert(obj); }
 
     void Remove(IAsyncScope* obj) {
         children.erase(obj);
@@ -40,16 +38,14 @@ protected:
 };
 
 struct InitiateDestructionDeleter {
-    void operator()(IAsyncScope* scope) {
-        scope->StartDestroy();
-    }
+    void operator()(IAsyncScope* scope) { scope->StartDestroy(); }
 };
 
 struct ExecutionContext : public IAsyncScope {
     ~ExecutionContext() {
         detached_ = true;
 
-        while (! children.empty() or !ops.empty()) {
+        while (!children.empty() or !ops.empty()) {
             Poll();
         }
     }
@@ -58,15 +54,15 @@ struct ExecutionContext : public IAsyncScope {
 
     std::deque<std::function<void()>> ops;
 
-    template<typename T>
+    template <typename T>
     void Enqueue(T&& op) {
         ops.push_back(std::forward<T>(op));
     }
-    
+
     size_t Poll() {
         auto const num_ops = ops.size();
 
-        for (size_t i=0; i<num_ops; i++) {
+        for (size_t i = 0; i < num_ops; i++) {
             auto op = std::move(ops.front());
             ops.pop_front();
             op();
@@ -81,13 +77,10 @@ protected:
 };
 
 struct TestAsyncScope : public IAsyncScope {
-    TestAsyncScope(ExecutionContext& ctx, IAsyncScope& scope, size_t depth, size_t i) 
-        : ctx_{ctx}
-        , parent_scope_{scope}
-        , depth_{depth}
-        , i_{i}
-    {
-        for (size_t i=0; i<depth_; i++) {
+    TestAsyncScope(ExecutionContext& ctx, IAsyncScope& scope, size_t depth,
+                   size_t i)
+        : ctx_{ctx}, parent_scope_{scope}, depth_{depth}, i_{i} {
+        for (size_t i = 0; i < depth_; i++) {
             std::print("  ");
         }
         std::println("constructing depth={} i={}", depth_, i_);
@@ -102,23 +95,19 @@ struct TestAsyncScope : public IAsyncScope {
 
 protected:
     void handleReadyForDestruction() override {
-
         ctx_.Enqueue([this] {
             counter++;
 
-            if (counter == depth_*5+i_) {
+            if (counter == depth_ * 5 + i_) {
                 TestAsyncScope::~TestAsyncScope();
             }
         });
-
     }
 
-    void handleStartDestroyParent() override {
-         
-    }
+    void handleStartDestroyParent() override {}
 
     ~TestAsyncScope() {
-        for (size_t i=0; i<depth_; i++) {
+        for (size_t i = 0; i < depth_; i++) {
             std::print("  ");
         }
         std::println("destructing depth={} i={}", depth_, i_);
@@ -129,21 +118,24 @@ protected:
 void Test0() {
     ExecutionContext ctx;
 
-    std::vector<std::unique_ptr<TestAsyncScope, InitiateDestructionDeleter>> scopes;
-    auto generate = [&](size_t idepth, size_t iwidth, auto gen, auto& current_scope) {
+    std::vector<std::unique_ptr<TestAsyncScope, InitiateDestructionDeleter>>
+        scopes;
+    auto generate = [&](size_t idepth, size_t iwidth, auto gen,
+                        auto& current_scope) {
         if (idepth == 3) {
-            return ;
+            return;
         }
 
-        for (size_t i=0; i<5; i++) {
-            std::unique_ptr<TestAsyncScope, InitiateDestructionDeleter> scope(new TestAsyncScope{ctx, current_scope, idepth, iwidth*5+i});
-            
-            gen(idepth+1, i, gen, *scope);
+        for (size_t i = 0; i < 5; i++) {
+            std::unique_ptr<TestAsyncScope, InitiateDestructionDeleter> scope(
+                new TestAsyncScope{ctx, current_scope, idepth, iwidth * 5 + i});
+
+            gen(idepth + 1, i, gen, *scope);
             scopes.push_back(std::move(scope));
         }
     };
     generate(0, 0, generate, ctx);
-    
+
     std::println("calling context destructor");
 }
 

@@ -1,16 +1,16 @@
-#include <iostream>
 #include <array>
+#include <iostream>
 #include <vector>
 
 // TODO remove what's not needed
-#include <poll.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <netinet/in.h>
-#include <errno.h>
+#include <poll.h>
 #include <sys/epoll.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "fmt/core.h"
 
@@ -44,7 +44,7 @@ int RunServer(unsigned int port) {
     if (bind(fd, reinterpret_cast<sockaddr const*>(&sin), sizeof(sin)) < 0) {
         ::fmt::print("bind error: {}\n", strerror(errno));
         return 1;
-    }   
+    }
     if (listen(fd, 10) < 0) {
         ::fmt::print("listen error {}", strerror(errno));
         return 1;
@@ -59,7 +59,7 @@ int RunServer(unsigned int port) {
         return 1;
     }
 
-    // 
+    //
     // add a socket to the interest list
     //
     epoll_event eevent;
@@ -71,7 +71,7 @@ int RunServer(unsigned int port) {
         return 1;
     }
 
-    std::array<epoll_event, 100> events; 
+    std::array<epoll_event, 100> events;
     for (;;) {
         auto nfds = epoll_wait(epollfd, events.data(), events.size(), 0);
 
@@ -87,15 +87,16 @@ int RunServer(unsigned int port) {
 
         for (auto& e : events) {
             if (e.data.fd == fd) {
-                ::fmt::print("new event for fd = {}\n", fd); 
+                ::fmt::print("new event for fd = {}\n", fd);
 
                 auto client_sock = accept(fd, nullptr, nullptr);
                 if (client_sock == -1) {
-                    ::fmt::print("accept failed! chcking if this is just no conn!\n");
-                    if (errno != EAGAIN && errno != EWOULDBLOCK){
+                    ::fmt::print(
+                        "accept failed! chcking if this is just no conn!\n");
+                    if (errno != EAGAIN && errno != EWOULDBLOCK) {
                         ::fmt::print("accept failed {}.\n", strerror(errno));
                         return 1;
-                    }  
+                    }
 
                     continue;
                 }
@@ -103,8 +104,8 @@ int RunServer(unsigned int port) {
                 ::fmt::print("valid connection from {}\n", client_sock);
                 return 0;
             } else {
-                ::fmt::print("event for unknown file descriptor {}\n", 
-                    static_cast<int>(e.data.fd));
+                ::fmt::print("event for unknown file descriptor {}\n",
+                             static_cast<int>(e.data.fd));
                 return 1;
             }
         }
@@ -113,6 +114,4 @@ int RunServer(unsigned int port) {
     return 0;
 }
 
-int main() {
-    return RunServer(12345);
-}
+int main() { return RunServer(12345); }

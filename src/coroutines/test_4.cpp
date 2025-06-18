@@ -2,55 +2,53 @@
 
 #include "core/macros.h"
 
-//#define TCPP_PRINT_HERE()
+// #define TCPP_PRINT_HERE()
 
 #define __TCPP_USE_LAZY
 
 struct SuspendNever {
-    bool await_ready() const noexcept { 
+    bool await_ready() const noexcept {
         TCPP_PRINT_HERE();
-        return true; 
+        return true;
     }
     void await_suspend(std::experimental::coroutine_handle<>) const noexcept {
         TCPP_PRINT_HERE();
     }
-    void await_resume() const noexcept {
-        TCPP_PRINT_HERE();
-    }
+    void await_resume() const noexcept { TCPP_PRINT_HERE(); }
 };
 
 struct SuspendAlways {
-    bool await_ready() const noexcept { 
+    bool await_ready() const noexcept {
         TCPP_PRINT_HERE();
-        return false; 
+        return false;
     }
     void await_suspend(std::experimental::coroutine_handle<>) const noexcept {
         TCPP_PRINT_HERE();
     }
-    void await_resume() const noexcept {
-        TCPP_PRINT_HERE();
-    }
+    void await_resume() const noexcept { TCPP_PRINT_HERE(); }
 };
 
-template<typename T>
+template <typename T>
 struct AwaitablePromise;
 
-template<typename T>
+template <typename T>
 struct Awaitable {
     using promise_type = AwaitablePromise<T>;
     Awaitable(Awaitable const&) = delete;
     Awaitable& operator=(Awaitable const&) = delete;
-    Awaitable(Awaitable&&) = default; 
-    Awaitable& operator=(Awaitable&&) = default; 
+    Awaitable(Awaitable&&) = default;
+    Awaitable& operator=(Awaitable&&) = default;
     Awaitable() { this_coro_.destroy(); }
 
     Awaitable(std::experimental::coroutine_handle<AwaitablePromise<T>> h)
-        : this_coro_{std::move(h)}
-    {
+        : this_coro_{std::move(h)} {
         TCPP_PRINT_HERE();
     }
 
-    bool await_ready() const noexcept { TCPP_PRINT_HERE(); return false; }
+    bool await_ready() const noexcept {
+        TCPP_PRINT_HERE();
+        return false;
+    }
     auto await_suspend(std::experimental::coroutine_handle<> h) const noexcept {
         TCPP_PRINT_HERE();
         return h;
@@ -63,23 +61,27 @@ struct Awaitable {
     std::experimental::coroutine_handle<AwaitablePromise<T>> this_coro_;
 };
 
-template<typename T>
+template <typename T>
 struct AwaitablePromise {
     Awaitable<T> get_return_object() {
         TCPP_PRINT_HERE();
-        return Awaitable<T>{std::experimental::coroutine_handle<AwaitablePromise<T>>::from_promise(*this)};
+        return Awaitable<T>{std::experimental::coroutine_handle<
+            AwaitablePromise<T>>::from_promise(*this)};
     }
 
-    SuspendNever initial_suspend() noexcept { 
+    SuspendNever initial_suspend() noexcept {
         TCPP_PRINT_HERE();
-        return {}; 
+        return {};
     }
-    SuspendAlways final_suspend() noexcept { 
+    SuspendAlways final_suspend() noexcept {
         TCPP_PRINT_HERE();
-        return {}; 
+        return {};
     }
     void unhandled_exception() {}
-    void return_value(T&& t) { TCPP_PRINT_HERE(); value_ = std::move(t); }
+    void return_value(T&& t) {
+        TCPP_PRINT_HERE();
+        value_ = std::move(t);
+    }
 
     T value_;
 };
@@ -102,10 +104,12 @@ Awaitable<std::string> Test0Coro() {
     TCPP_PRINT_HERE();
 
     std::size_t i = 0;
-    for (; i<100000; i++) {
-        //if (i % 100 == 0) 
-        { ::fmt::print("i = {}\n", i); }
-        auto const value =  co_await GetInt5();
+    for (; i < 100000; i++) {
+        // if (i % 100 == 0)
+        {
+            ::fmt::print("i = {}\n", i);
+        }
+        auto const value = co_await GetInt5();
         ::fmt::print("value = {}\n", value);
     }
 

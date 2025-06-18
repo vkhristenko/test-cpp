@@ -6,9 +6,7 @@ char IErrorDetails::s_id = 0;
 char StringErrorDetails::s_id = 0;
 
 Error::Error(Error const& e)
-    : source_context_{e.source_context_}
-    , details_{e.details_->Clone()}
-{}
+    : source_context_{e.source_context_}, details_{e.details_->Clone()} {}
 
 Error& Error::operator=(Error const& e) {
     this->source_context_ = e.source_context_;
@@ -16,4 +14,4 @@ Error& Error::operator=(Error const& e) {
     return *this;
 }
 
-}
+}  // namespace core

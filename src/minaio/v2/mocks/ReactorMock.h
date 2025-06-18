@@ -10,4 +10,4 @@ struct ReactorMock {
     MOCK_METHOD(void, Poll, (), noexcept);
 }
 
-}
+}  // namespace minaio::v2::mocks
