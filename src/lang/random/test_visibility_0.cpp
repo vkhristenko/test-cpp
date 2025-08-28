@@ -1,5 +1,7 @@
 #include <iostream>
 
+
+/// this is a good one
 class Base {
 protected:
     virtual void SomeFunction() const {}
